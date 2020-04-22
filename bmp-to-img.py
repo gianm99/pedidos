@@ -1,26 +1,21 @@
-# Gian Lucas Martín Chamorro
+"""Programa que elimina el encabezado de los ficheros .bmp de un directorio y
+    los guarda como .img en otro directorio.
 """
-    Program that removes the header of all the .bmp files in a directory and
-    saves them as .img files in another directory.
-"""
-
 import sys
 import getopt
 import os
 import shutil
 
-DEFAULT_INPUT = 'IMAGENES_CARACTERES_BMP'
-DEFAULT_OUTPUT = 'IMAGENES_CARACTERES_IMG'
-
+DEFAULT_INPUT = 'IMAGENES_PRÁCTICA_LISP'
+DEFAULT_OUTPUT = 'img'
 
 def convert(inputfile,outputfile):
-    src_file=open(inputfile,'rb') # open inputfile (read + binary)
-    src_file.read(54) # move cursor to end of header
-    dst_file=open(outputfile,'wb') # open destination file
-    shutil.copyfileobj(src_file,dst_file) # copy file contents without the header
-    # print('File '+inputfile+' saved as '+outputfile)
-
-
+    """Eliminar el encabezado de un archivo .bmp y convertirlo en .img."""
+    src_file=open(inputfile,'rb') # abrir fichero input (read + binary)
+    src_file.read(54) # mover el cursor al final del encabezado
+    dst_file=open(outputfile,'wb') # abrir fichero destino
+    shutil.copyfileobj(src_file,dst_file) # copiar el contenido sin el encabezado
+    print('Fichero '+inputfile+' guardado como '+outputfile)
 
 def main(argv):
     inputdirectory = DEFAULT_INPUT
@@ -38,27 +33,23 @@ def main(argv):
             inputdirectory = arg
         elif opt == '-o':
             outputdirectory = arg
-    # create the directories if they don't already exist
-    os.makedirs(inputdirectory, exist_ok=True)
+    # si no existe el directorio de entrada, termina la ejecución
+    if not os.path.isdir(inputdirectory):
+        sys.exit()
+    # crear el directorio de salida si no existe
     os.makedirs(outputdirectory, exist_ok=True)
-    
-    # loop through all .bmp files on inputdirectory
+    # recorrer todos los ficheros .bmp del directorio
     inputfile=''
     outputfile=''
     base=''
     for filename in os.listdir(inputdirectory):
         if filename.endswith('.bmp'):
             inputfile=inputdirectory+'\\'+filename
-            base=filename.rpartition('.')[0] # remove extension
-            outputfile=outputdirectory+'\\'+base
-            if filename.endswith('_NB.bmp') or filename.endswith('_BN.bmp'):
-                outputfile=outputfile+'_20.img'
-            else:
-                outputfile=outputfile+'_52.img'
+            base=filename.rpartition('.')[0] # quitar extension
+            outputfile=outputdirectory+'\\'+base+'.img'
             convert(inputfile,outputfile)
-    
-    print('All .bmp files from ' + inputdirectory +
-          ' have been succesfully converted to .img files on ' + outputdirectory)
+    print('Todos los ficheros .bmp de ' + inputdirectory +
+          ' han sido convertido a ficheros .img en ' + outputdirectory)
 
 
 if __name__ == "__main__":
