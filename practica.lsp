@@ -11,59 +11,27 @@
 ; creación de pedidos.
 ;-----------------------------------------------------
 (defun inicio ()
+    (fondo))
+
+;-----------------------------------------------------
+; Función que dibuja las figuras del fondo del 
+; programa que se mantienen fijas.
+;-----------------------------------------------------
+(defun fondo ()
+    (cls)
+    (rectangulo-relleno 0 0 0 1 333 436 373) ; rectangulo del titulo
+    (rectangulo 1 174 436 330) ; espacio de la lista de productos
+    (rectangulo-relleno 0 0 0 1 136 637 170) ; letrero del pedido
+    (rectangulo 1 33 637 133) ; espacio de productos del pedido
+    (rectangulo 1 0 330 30) ; espacio del menu
+    (rectangulo-relleno 0 0 0 331 0 637 30) ; espacio del total
+    (visualizador "img\\LogoPractica.img" 440 174 200) ; logo del programa
+    ;; (visualizar-palabra "pedido 01                     " 5 144 2 1))
 )
 
-;-----------------------------------------------------
-; Función que dada una letra visualiza dicha letra
-; utilizando la imagen del tipo dado
-; tipo 1 --> ".img" (52 x 52 píxeles)
-; tipo 2 --> "_NB.img" (20 x 20 píxeles)
-;-----------------------------------------------------
-(defun visualizar-letra (letra x y tipo)
-	(if (equal letra " ") (setq letra "")) ; el caso de la letra espacio
-    (cond ((= tipo 1)
-            (visualizador (concatenate 'string "img/" letra ".img") x y 52))
-		((= tipo 2)
-            (visualizador (concatenate 'string "img/" letra "_NB.img") x y 20))))
-
-;-----------------------------------------------------
-; Función que dada una palabra la visualiza,
-; letra a letra, a partir de la coordenada (x,y) con 
-; imágenes del tipo dado y con un espaciado dado entre
-; ellas.
-; tipo 1 --> ".img" (52 x 52 píxeles)
-; tipo 2 --> "_NB.img" (20 x 20 píxeles)
-;-----------------------------------------------------
-(defun visualizar-palabra (palabra x y tipo espaciado)
-    (cls)
-    (dotimes (i (length palabra))
-		(VisualizarLetra (string (aref palabra i)) x y tipo)
-		(color 0 0 0)
-		(cond ((= tipo 1) (setq x (+ 52 x espaciado)))
-			(t (setq x (+ 20 x espaciado))))))
-
-;-----------------------------------------------------
-; Función que visualiza en pantalla la imagen dada por
-; parámetro a partir de la coordenada (x,y) y de
-; resolución dimensión x dimension
-;-----------------------------------------------------
-(defun visualizador (imagen a b dimension)
-    (setq fichero (open imagen :direction :input :element-type 'unsigned-byte))
-    (setq x a y b)
-    (dotimes (i dimension)
-        (move x y)
-        (dotimes (j dimension)
-            ;leer valores de RGB
-            (setq B (read-byte fichero nil))
-            (setq G (read-byte fichero nil))
-            (setq R (read-byte fichero nil))
-            (if (null B) (return ()))
-            (color R G B)
-            (draw (+ 1 x) y)
-            (setq x (+ 1 x))) ; incrementar x
-        (setq x a y (+ 1 y))) ; reiniciar x e incrementar y
-    (close fichero)
-    (color 0 0 0))
+;;-----------------------------------------------------------------------------
+;; FUNCIONES BÁSICAS
+;;-----------------------------------------------------------------------------
 
 ;-----------------------------------------------------
 ; Función que dibuja un rectángulo a partir de la 
@@ -90,16 +58,84 @@
 )
 
 ;-----------------------------------------------------
-; Función que dibuja las figuras del fondo del 
-; programa que se mantienen fijas.
+; Función que dada una letra visualiza dicha letra
+; utilizando la imagen del tipo dado
+; tipo 1 --> ".img" (52 x 52 píxeles)
+; tipo 2 --> "_NB.img" (20 x 20 píxeles)
 ;-----------------------------------------------------
-(defun fondo ()
-    (cls)
-    (rectangulo-relleno 0 0 0 1 333 436 373)
-    (rectangulo 1 174 436 330)
-    (rectangulo-relleno 0 0 0 1 136 637 170)
-    (rectangulo 1 33 637 133)
-    (rectangulo 1 0 330 30)
-    (rectangulo-relleno 0 0 0 331 0 637 30)
-    ;; (visualizador "pedidos-lisp\\img\\LogoPractica.img" 440 174 200)
-    )
+(defun visualizar-letra (letra x y tipo)
+	(if (equal letra " ") (setq letra "")) ; el caso de la letra espacio
+    (cond ((= tipo 1)
+            (visualizador (concatenate 'string "img/" letra ".img") x y 52))
+		((= tipo 2)
+            (visualizador (concatenate 'string "img/" letra "_NB.img") x y 20))))
+
+;-----------------------------------------------------
+; Función que dada una palabra la visualiza,
+; letra a letra, a partir de la coordenada (x,y) con 
+; imágenes del tipo dado y con un espaciado dado entre
+; ellas.
+; tipo 1 --> ".img" (52 x 52 píxeles)
+; tipo 2 --> "_NB.img" (20 x 20 píxeles)
+;-----------------------------------------------------
+(defun visualizar-palabra (palabra x y tipo espaciado)
+    (dotimes (i (length palabra))
+		(visualizar-letra (string (aref palabra i)) x y tipo)
+		(color 0 0 0)
+	    (if (= tipo 1) (setq x (+ 52 x espaciado)) (setq x (+ 20 x espaciado)))))
+
+;-----------------------------------------------------
+; Función que visualiza en pantalla la imagen dada por
+; parámetro a partir de la coordenada (x,y) y de
+; resolución dimensión x dimension
+;-----------------------------------------------------
+(defun visualizador (imagen a b dimension)
+    (setq fichero (open imagen :direction :input :element-type 'unsigned-byte))
+    (setq x a y b)
+    (dotimes (i dimension)
+        (move x y)
+        (dotimes (j dimension)
+            ;leer valores de RGB
+            (setq B (read-byte fichero nil))
+            (setq G (read-byte fichero nil))
+            (setq R (read-byte fichero nil))
+            (if (null B) (return ()))
+            (color R G B)
+            (draw (+ 1 x) y)
+            (setq x (+ 1 x))) ; incrementar x
+        (setq x a y (+ 1 y))) ; reiniciar x e incrementar y
+    (close fichero)
+    (color 0 0 0))
+
+;-----------------------------------------------------
+; Función que borra a partir de la (linea,columna) 
+; dada el número de columnas indicado de la pantalla
+; en modo texto.
+;-----------------------------------------------------
+(defun borrar (linea columna numcolumnas)
+	(goto-xy columna linea)
+	(dotimes (i numcolumnas)
+		(princ " ")
+		(goto-xy (+ i columna) linea)
+	)
+)
+
+;-----------------------------------------------------
+; Función que visualiza el texto dado en la 
+; (linea,columna) dada de la pantalla en modo texto.
+;-----------------------------------------------------
+(defun escribir (linea columna TEXTO)
+	(goto-xy columna linea)
+	(princ TEXTO)
+)
+
+;-----------------------------------------------------
+; Función que visualiza el indicador del número de 
+; pedido dado en la pantalla usando imágenes. Solo 
+; funciona para n tal que 0 <= n < 100.
+; pintar 0 --> borrar el letrero
+; pintar 1 --> dibujar el letrero
+;-----------------------------------------------------
+(defun letrero-pedido (n pintar)
+    (cond ((= 0 n) (rectangulo-relleno ))
+        (t ())))
