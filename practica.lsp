@@ -1,5 +1,5 @@
 ;-----------------------------------------------------
-; Programa que simula la generación de pedidos de 
+; Programa que simula la generación de pedidos de
 ; productos dentro de una interfaz de usuario simple.
 ;
 ; Autores:  Gian Lucas Martín Chamorro
@@ -7,19 +7,22 @@
 ;-----------------------------------------------------
 
 ;-----------------------------------------------------
-; Función que inicia la ejecución del programa de 
+; Función que inicia la ejecución del programa de
 ; creación de pedidos.
 ;-----------------------------------------------------
 (defun inicio ()
-    (fondo))
+    (fondo)
+    (listar-productos) ; lista de los productos
+)
 
 ;-----------------------------------------------------
-; Función que dibuja las figuras del fondo del 
+; Función que dibuja las figuras del fondo del
 ; programa que se mantienen fijas.
 ;-----------------------------------------------------
 (defun fondo ()
     (cls)
     (rectangulo-relleno 0 0 0 1 333 436 373) ; rectangulo del titulo
+    (visualizar-palabra "productos" 84 342 2 10)
     (rectangulo 1 174 436 330) ; espacio de la lista de productos
     (rectangulo-relleno 0 0 0 1 136 637 170) ; letrero del pedido
     (rectangulo 1 33 637 133) ; espacio de productos del pedido
@@ -29,21 +32,82 @@
     ;; (visualizar-palabra "pedido 01                     " 5 144 2 1))
 )
 
+;-----------------------------------------------------
+; Función que lista los 20 productos del programa para hacer.
+;-----------------------------------------------------
+(defun listar-productos()
+    (escribir 3 1 "01. Cereales")
+    (escribir 3 22 "03.00")
+    (escribir 4 1 "03. Pan de molde")
+    (escribir 4 22 "01.00")
+    (escribir 5 1 "05. Gaseosa")
+    (escribir 5 22 "02.00")
+    (escribir 6 1 "07. Agua")
+    (escribir 6 22 "01.00")
+    (escribir 7 1 "09. Muffin")
+    (escribir 7 22 "03.00")
+    (escribir 8 1 "11. Huevos")
+    (escribir 8 22 "04.00")
+    (escribir 9 1 "13. Trufa")
+    (escribir 9 22 "14.00")
+    (escribir 10 1 "15. Harina")
+    (escribir 10 22 "01.00")
+    (escribir 11 1 "17. Cookie")
+    (escribir 11 22 "02.00")
+    (escribir 12 1 "19. Vino")
+    (escribir 12 22 "26.00")
+    (escribir 3 29 "02. Hielo")
+    (escribir 3 49 "03.00")
+    (escribir 4 29 "04. Cecina")
+    (escribir 4 49 "10.00")
+    (escribir 5 29 "06. Whisky")
+    (escribir 5 49 "30.00")
+    (escribir 6 29 "08. Pack de leche")
+    (escribir 6 49 "07.00")
+    (escribir 7 29 "10. Berberecho")
+    (escribir 7 49 "21.00")
+    (escribir 8 29 "12. Cigalas")
+    (escribir 8 49 "45.00")
+    (escribir 9 29 "14. Caviar")
+    (escribir 9 49 "75.00")
+    (escribir 10 29 "16. Langostinos")
+    (escribir 10 49 "45.00")
+    (escribir 11 29 "18. Calamar")
+    (escribir 11 49 "42.00")
+    (escribir 12 29 "20. Pizza")
+    (escribir 12 49 "05.00")
+    (goto-xy 0 22)
+)
+
+;-----------------------------------------------------
+; Función que visualiza el indicador del número de
+; pedido dado en la pantalla usando imágenes. Solo
+; funciona para n tal que 0 <= n < 100.
+; pintar 0 --> borrar el letrero
+; pintar 1 --> dibujar el letrero
+;-----------------------------------------------------
+(defun indicador-pedido (n pintar)
+    (cond ((< n 10) (visualizar-palabra
+            (concatenate 'string "pedido 0" (format nil "~A" n) "                     ") 5 144 2 1 ))
+        (t (visualizar-palabra
+            (concatenate 'string "pedido " (format nil "~A" n) "                     ") 5 144 2 1))))
+    ;; (visualizar-palabra "pedido 01                     " 5 144 2 1))
+;;(visualizar-palabra (concatenate 'string "pedido " letra))
+;; (defun indicador-total ())
 ;;-----------------------------------------------------------------------------
 ;; FUNCIONES BÁSICAS
 ;;-----------------------------------------------------------------------------
 
 ;-----------------------------------------------------
-; Función que dibuja un rectángulo a partir de la 
+; Función que dibuja un rectángulo a partir de la
 ; coordenada (x1,y1) hasta la (x2, y2).
 ;-----------------------------------------------------
 (defun rectangulo (x1 y1 x2 y2)
 	(move x1 y1)
-	(draw x1 y2 x2 y2 x2 y1 x1 y1)
-)
+	(draw x1 y2 x2 y2 x2 y1 x1 y1))
 
 ;-----------------------------------------------------
-; Función que dibuja un rectángulo relleno de color 
+; Función que dibuja un rectángulo relleno de color
 ; (r,g,b) a partir de la coordenada (x1,y1) hasta la
 ; (x2, y2).
 ;-----------------------------------------------------
@@ -72,7 +136,7 @@
 
 ;-----------------------------------------------------
 ; Función que dada una palabra la visualiza,
-; letra a letra, a partir de la coordenada (x,y) con 
+; letra a letra, a partir de la coordenada (x,y) con
 ; imágenes del tipo dado y con un espaciado dado entre
 ; ellas.
 ; tipo 1 --> ".img" (52 x 52 píxeles)
@@ -108,7 +172,7 @@
     (color 0 0 0))
 
 ;-----------------------------------------------------
-; Función que borra a partir de la (linea,columna) 
+; Función que borra a partir de la (linea,columna)
 ; dada el número de columnas indicado de la pantalla
 ; en modo texto.
 ;-----------------------------------------------------
@@ -121,21 +185,10 @@
 )
 
 ;-----------------------------------------------------
-; Función que visualiza el texto dado en la 
+; Función que visualiza el texto dado en la
 ; (linea,columna) dada de la pantalla en modo texto.
 ;-----------------------------------------------------
 (defun escribir (linea columna TEXTO)
 	(goto-xy columna linea)
 	(princ TEXTO)
 )
-
-;-----------------------------------------------------
-; Función que visualiza el indicador del número de 
-; pedido dado en la pantalla usando imágenes. Solo 
-; funciona para n tal que 0 <= n < 100.
-; pintar 0 --> borrar el letrero
-; pintar 1 --> dibujar el letrero
-;-----------------------------------------------------
-(defun letrero-pedido (n pintar)
-    (cond ((= 0 n) (rectangulo-relleno ))
-        (t ())))
