@@ -1,5 +1,6 @@
 # Productos
 
+Para cada producto se tiene que guardar únicamente su nombre y su precio. Para obtener su imagen se usa el número de producto.
 Esta es la lista de los 20 productos que se pueden pedir en el programa `practica.lsp`:
 
 1. Producto 1 (producto1.img)

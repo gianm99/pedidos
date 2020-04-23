@@ -89,6 +89,10 @@
 	(color 0 0 0)
 )
 
+;-----------------------------------------------------
+; Función que dibuja las figuras del fondo del 
+; programa que se mantienen fijas.
+;-----------------------------------------------------
 (defun fondo ()
     (cls)
     (rectangulo-relleno 0 0 0 1 333 436 373)
@@ -96,4 +100,6 @@
     (rectangulo-relleno 0 0 0 1 136 637 170)
     (rectangulo 1 33 637 133)
     (rectangulo 1 0 330 30)
-    (rectangulo-relleno 0 0 0 331 0 637 30))
+    (rectangulo-relleno 0 0 0 331 0 637 30)
+    ;; (visualizador "pedidos-lisp\\img\\LogoPractica.img" 440 174 200)
+    )
