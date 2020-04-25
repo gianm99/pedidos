@@ -17,9 +17,9 @@ Esta es la lista de los 20 productos que se pueden pedir en el programa `practic
 12. Cecina              10
 13. Whisky              30          
 14. Pack de leche       7
-15. 1kg de Berberecho   21
-16. 1kg de Cigala       45
-17. 1kg de Caviar       75
-18. 1kg de Langostinos  45
-19. 1kg de Calamar      42
+15. Berberecho          21
+16. Cigala              45
+17. Caviar              75
+18. Langostinos         45
+19. Calamar             42
 20. Pizza               5
