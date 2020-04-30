@@ -1,14 +1,15 @@
 ;-----------------------------------------------------
-; Programa que simula la generación de pedidos de
-; productos dentro de una interfaz de usuario simple.
+; Simula la generación de pedidos de productos dentro 
+; de una interfaz de usuario simple.
 ;
 ; Autores:  Gian Lucas Martín Chamorro
 ;           Irene Vera Barea
+; Asignatura:   21721 - Lenguajes de Programación
 ;-----------------------------------------------------
 
 ;-----------------------------------------------------
-; Función que inicia la ejecución del programa de
-; creación de pedidos.
+; Inicia la ejecución del programa de creación de
+; pedidos.
 ;-----------------------------------------------------
 (defun inicio ()
     (fondo)
@@ -16,8 +17,8 @@
 )
 
 ;-----------------------------------------------------
-; Función que dibuja las figuras del fondo del
-; programa que se mantienen fijas.
+; Dibuja las figuras del fondo del programa que se
+; mantienen fijas.
 ;-----------------------------------------------------
 (defun fondo ()
     (cls)
@@ -29,11 +30,10 @@
     (rectangulo 1 0 330 30) ; espacio del menu
     (rectangulo-relleno 0 0 0 331 0 637 30) ; espacio del total
     (visualizador "img\\LogoPractica.img" 440 174 200) ; logo del programa
-    ;; (visualizar-palabra "pedido 01                     " 5 144 2 1))
 )
 
 ;-----------------------------------------------------
-; Función que lista los 20 productos del programa para hacer.
+; Lista los 20 productos del programa para hacer.
 ;-----------------------------------------------------
 (defun listar-productos()
     (escribir 3 1 "01. Cereales")
@@ -80,36 +80,33 @@
 )
 
 ;-----------------------------------------------------
-; Función que visualiza el indicador del número de
-; pedido dado en la pantalla usando imágenes. Solo
-; funciona para n tal que 0 <= n < 100.
-; pintar 0 --> borrar el letrero
-; pintar 1 --> dibujar el letrero
+; Visualiza el indicador del número de pedido dado en
+; la pantalla usando imágenes. Solo funciona para n
+; tal que 0 <= n < 100.
 ;-----------------------------------------------------
-(defun indicador-pedido (n pintar)
+(defun indicador-pedido (n)
     (cond ((< n 10) (visualizar-palabra
-            (concatenate 'string "pedido 0" (format nil "~A" n) "                     ") 5 144 2 1 ))
+            (concatenate 'string "pedido 0" (format nil "~A" n) 
+            "                     ") 5 144 2 1 ))
         (t (visualizar-palabra
-            (concatenate 'string "pedido " (format nil "~A" n) "                     ") 5 144 2 1))))
-    ;; (visualizar-palabra "pedido 01                     " 5 144 2 1))
-;;(visualizar-palabra (concatenate 'string "pedido " letra))
-;; (defun indicador-total ())
+            (concatenate 'string "pedido " (format nil "~A" n) 
+            "                     ") 5 144 2 1))))
+
 ;;-----------------------------------------------------------------------------
 ;; FUNCIONES BÁSICAS
 ;;-----------------------------------------------------------------------------
 
 ;-----------------------------------------------------
-; Función que dibuja un rectángulo a partir de la
-; coordenada (x1,y1) hasta la (x2, y2).
+; Dibuja un rectángulo a partir de la coordenada 
+; (x1,y1) hasta la (x2, y2).
 ;-----------------------------------------------------
 (defun rectangulo (x1 y1 x2 y2)
 	(move x1 y1)
 	(draw x1 y2 x2 y2 x2 y1 x1 y1))
 
 ;-----------------------------------------------------
-; Función que dibuja un rectángulo relleno de color
-; (r,g,b) a partir de la coordenada (x1,y1) hasta la
-; (x2, y2).
+; Dibuja un rectángulo relleno de color (r,g,b) a
+; partir de la coordenada (x1,y1) hasta la (x2, y2).
 ;-----------------------------------------------------
 (defun rectangulo-relleno (r g b x1 y1 x2 y2)
 	(color r g b)
@@ -122,8 +119,8 @@
 )
 
 ;-----------------------------------------------------
-; Función que dada una letra visualiza dicha letra
-; utilizando la imagen del tipo dado
+; Dada una letra visualiza dicha letra utilizando la
+; imagen del tipo dado
 ; tipo 1 --> ".img" (52 x 52 píxeles)
 ; tipo 2 --> "_NB.img" (20 x 20 píxeles)
 ;-----------------------------------------------------
@@ -135,10 +132,9 @@
             (visualizador (concatenate 'string "img/" letra "_NB.img") x y 20))))
 
 ;-----------------------------------------------------
-; Función que dada una palabra la visualiza,
-; letra a letra, a partir de la coordenada (x,y) con
-; imágenes del tipo dado y con un espaciado dado entre
-; ellas.
+; Dada una palabra la visualiza, letra a letra, a 
+; partir de la coordenada (x,y) con imágenes del tipo 
+; dado y con un espaciado dado entre ellas.
 ; tipo 1 --> ".img" (52 x 52 píxeles)
 ; tipo 2 --> "_NB.img" (20 x 20 píxeles)
 ;-----------------------------------------------------
@@ -149,9 +145,9 @@
 	    (if (= tipo 1) (setq x (+ 52 x espaciado)) (setq x (+ 20 x espaciado)))))
 
 ;-----------------------------------------------------
-; Función que visualiza en pantalla la imagen dada por
-; parámetro a partir de la coordenada (x,y) y de
-; resolución dimensión x dimension
+; Visualiza en pantalla la imagen dada por parámetro a
+; partir de la coordenada (x,y) y de resolución 
+; dimensión x dimension
 ;-----------------------------------------------------
 (defun visualizador (imagen a b dimension)
     (setq fichero (open imagen :direction :input :element-type 'unsigned-byte))
@@ -172,9 +168,8 @@
     (color 0 0 0))
 
 ;-----------------------------------------------------
-; Función que borra a partir de la (linea,columna)
-; dada el número de columnas indicado de la pantalla
-; en modo texto.
+; Borra a partir de la (linea,columna) dada el número 
+; de columnas indicado de la pantalla en modo texto.
 ;-----------------------------------------------------
 (defun borrar (linea columna numcolumnas)
 	(goto-xy columna linea)
@@ -185,8 +180,8 @@
 )
 
 ;-----------------------------------------------------
-; Función que visualiza el texto dado en la
-; (linea,columna) dada de la pantalla en modo texto.
+; Visualiza el texto dado en la (linea,columna) dada 
+; de la pantalla en modo texto.
 ;-----------------------------------------------------
 (defun escribir (linea columna TEXTO)
 	(goto-xy columna linea)
