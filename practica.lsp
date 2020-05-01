@@ -89,7 +89,6 @@
         (when fichero
             (dotimes (i 20)
                 (setq nombre-producto (read-line fichero nil))
-                ;; (setq precio-producto (parse-integer (read-line fichero nil)))
                 (setq precio-producto (read-line fichero nil))
                 (setf (aref productos i) (make-producto :nombre nombre-producto
                     :precio precio-producto
