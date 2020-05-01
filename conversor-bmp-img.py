@@ -6,7 +6,7 @@ import getopt
 import os
 import shutil
 
-DEFAULT_INPUT = 'IMAGENES_PRÁCTICA_LISP'
+DEFAULT_INPUT = 'bmp'
 DEFAULT_OUTPUT = 'img'
 
 def convert(inputfile,outputfile):
