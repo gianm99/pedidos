@@ -80,6 +80,22 @@
 )
 
 ;-----------------------------------------------------
+; Inicializa la lista de productos leyendo desde el 
+; fichero pasado como argumento.
+;-----------------------------------------------------
+(defun inicializar-lista (nombre)
+    (setq productos (make-array 20)) ; creación del array de 20 componentes
+    (let ((fichero (open nombre :direction :input :if-does-not-exist nil)))
+        (when fichero
+            (dotimes (i 20)
+                (setq nombre-producto (read-line fichero nil))
+                ;; (setq precio-producto (parse-integer (read-line fichero nil)))
+                (setq precio-producto (read-line fichero nil))
+                (setf (aref productos i) (make-producto :nombre nombre-producto
+                    :precio precio-producto
+                    :id i))))))
+
+;-----------------------------------------------------
 ; Visualiza el indicador del número de pedido dado en
 ; la pantalla usando imágenes. Solo funciona para n
 ; tal que 0 <= n < 100.
@@ -186,4 +202,14 @@
 (defun escribir (linea columna TEXTO)
 	(goto-xy columna linea)
 	(princ TEXTO)
+)
+
+;;-----------------------------------------------------------------------------
+;; ESTRUCTURAS
+;;-----------------------------------------------------------------------------
+
+(defstruct producto
+    nombre
+    precio
+    id
 )
