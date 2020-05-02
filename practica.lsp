@@ -106,8 +106,14 @@
             (concatenate 'string "pedido " (format nil "~A" n) 
             "                     ") 5 144 2 1))))
 
+;-----------------------------------------------------
+; Visualiza la imagen que corresponda al número n. Si
+; n es menor a 0 o mayor a 19 no hace nada. 
+;-----------------------------------------------------
 (defun imagen-producto (n)
-    (cond ((< n 20) (visualizador (format nil "img\\producto~a.img" n) 440 174 200))))
+    (cond ((and (>= n 0) (< n 20)) 
+        (visualizador (format nil "img\\producto~a.img" n) 440 174 200))))
+
 ;;-----------------------------------------------------------------------------
 ;; FUNCIONES BÁSICAS
 ;;-----------------------------------------------------------------------------
