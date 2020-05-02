@@ -185,6 +185,23 @@
 	(format t TEXTO)
 )
 
+;-----------------------------------------------------
+; Convierte la representación en string de un float 
+; en un float y lo devuelve.
+;-----------------------------------------------------
+(defun parse-float (s)
+    (if (> (count #\. s) 1) (return))
+    (setq l (length s))
+    )
+
+;-----------------------------------------------------
+; Determina si un número en código representa un 
+; dígito numérico. Devuelve t si se cumple y nil si no.
+;-----------------------------------------------------
+(defun es-numero (n)
+    (cond ((and (> n 47) (< n 58)) t)
+        (t nil)))
+
 ;;-----------------------------------------------------------------------------
 ;; ESTRUCTURAS
 ;;-----------------------------------------------------------------------------
