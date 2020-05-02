@@ -65,13 +65,15 @@
 ; la pantalla usando imágenes. Solo funciona para n
 ; tal que 0 <= n < 100.
 ;-----------------------------------------------------
+;; (defun indicador-pedido (n)
+;;     (cond ((< n 10) (visualizar-palabra
+;;             (concatenate 'string "pedido 0" (format nil "~A" n) 
+;;             "                     ") 5 144 2 1 ))
+;;         (t (visualizar-palabra
+;;             (concatenate 'string "pedido " (format nil "~A" n) 
+;;             "                     ") 5 144 2 1))))
 (defun indicador-pedido (n)
-    (cond ((< n 10) (visualizar-palabra
-            (concatenate 'string "pedido 0" (format nil "~A" n) 
-            "                     ") 5 144 2 1 ))
-        (t (visualizar-palabra
-            (concatenate 'string "pedido " (format nil "~A" n) 
-            "                     ") 5 144 2 1))))
+    (visualizar-palabra (format nil "~30a" (format nil "pedido ~2,'0d" n)) 5 144 2 1))
 
 ;-----------------------------------------------------
 ; Visualiza la imagen que corresponda al número n. Si
@@ -182,6 +184,44 @@
 	(goto-xy columna linea)
 	(format t TEXTO)
 )
+
+;-----------------------------------------------------
+; Convierte la representación en string de un float 
+; en un float y lo devuelve. Solo funciona con números
+; positivos. La coma de los números decimales tiene 
+; que ser un punto (".").
+;-----------------------------------------------------
+(defun parse-float (s)
+    (setq nf 0)
+    (setq lf (length s))
+    (setq pp (position #\. s))  ; Posición del punto
+    (cond ((not pp) (setq nf (parse-integer s)))  ; No hay parte decimal
+        (t (setq nf (parse-integer (subseq s 0 pp)))
+            (dotimes (i (- lf pp 1))
+                (setq nf (+ nf (* (- (char-code (char s (+ pp i 1))) 48) 
+                    (expt 10 (- (+ i 1)))))))))
+    (float nf))
+
+;-----------------------------------------------------
+; Convierte la representación en string de un integer 
+; en un integer y lo devuelve. Solo funciona con 
+; números positivos.
+;-----------------------------------------------------
+(defun parse-integer (s)
+    (setq ni 0)
+    (setq li (length s))
+    (dotimes (j li)
+        (setq ni (+ ni (* (- (char-code (char s j)) 48) 
+            (expt 10 (- li j 1))))))
+    ni)
+
+;; ;-----------------------------------------------------
+;; ; Determina si un número en código representa un 
+;; ; dígito numérico. Devuelve t si se cumple y nil si no.
+;; ;-----------------------------------------------------
+;; (defun es-numero (n)
+;;     (cond ((and (> n 47) (< n 58)) t)
+;;         (t nil)))
 
 ;;-----------------------------------------------------------------------------
 ;; ESTRUCTURAS
