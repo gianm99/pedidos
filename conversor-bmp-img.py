@@ -15,7 +15,7 @@ def convert(inputfile,outputfile):
     src_file.read(54) # mover el cursor al final del encabezado
     dst_file=open(outputfile,'wb') # abrir fichero destino
     shutil.copyfileobj(src_file,dst_file) # copiar el contenido sin el encabezado
-    print('Fichero '+inputfile+' guardado como '+outputfile)
+    print(inputfile+' guardado como '+outputfile)
 
 def main(argv):
     inputdirectory = DEFAULT_INPUT
