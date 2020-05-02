@@ -91,8 +91,7 @@
                 (setq nombre-producto (read-line fichero nil))
                 (setq precio-producto (read-line fichero nil))
                 (setf (aref productos i) (make-producto :nombre nombre-producto
-                    :precio precio-producto
-                    :id i))))))
+                    :precio precio-producto))))))
 
 ;-----------------------------------------------------
 ; Visualiza el indicador del número de pedido dado en
@@ -107,6 +106,8 @@
             (concatenate 'string "pedido " (format nil "~A" n) 
             "                     ") 5 144 2 1))))
 
+(defun imagen-producto (n)
+    (cond ((< n 20) (visualizador (format nil "img\\producto~a.img" n) 440 174 200))))
 ;;-----------------------------------------------------------------------------
 ;; FUNCIONES BÁSICAS
 ;;-----------------------------------------------------------------------------
