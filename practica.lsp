@@ -65,13 +65,15 @@
 ; la pantalla usando imágenes. Solo funciona para n
 ; tal que 0 <= n < 100.
 ;-----------------------------------------------------
+;; (defun indicador-pedido (n)
+;;     (cond ((< n 10) (visualizar-palabra
+;;             (concatenate 'string "pedido 0" (format nil "~A" n) 
+;;             "                     ") 5 144 2 1 ))
+;;         (t (visualizar-palabra
+;;             (concatenate 'string "pedido " (format nil "~A" n) 
+;;             "                     ") 5 144 2 1))))
 (defun indicador-pedido (n)
-    (cond ((< n 10) (visualizar-palabra
-            (concatenate 'string "pedido 0" (format nil "~A" n) 
-            "                     ") 5 144 2 1 ))
-        (t (visualizar-palabra
-            (concatenate 'string "pedido " (format nil "~A" n) 
-            "                     ") 5 144 2 1))))
+    (visualizar-palabra (format nil "~30a" (format nil "pedido ~2,'0d" n)) 5 144 2 1))
 
 ;-----------------------------------------------------
 ; Visualiza la imagen que corresponda al número n. Si
