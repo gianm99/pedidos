@@ -13,7 +13,9 @@
 ;-----------------------------------------------------
 (defun inicio ()
     (fondo)
+    (inicializar-lista "productos.txt")
     (listar-productos) ; lista de los productos
+    (logo)
 )
 
 ;-----------------------------------------------------
@@ -29,55 +31,20 @@
     (rectangulo 1 33 637 133) ; espacio de productos del pedido
     (rectangulo 1 0 330 30) ; espacio del menu
     (rectangulo-relleno 0 0 0 331 0 637 30) ; espacio del total
-    (visualizador "img\\logo.img" 440 174 200) ; logo del programa
 )
 
 ;-----------------------------------------------------
-; Lista los 20 productos del programa para hacer.
+; Imprime la lista de los prodctos con su precio.
 ;-----------------------------------------------------
-(defun listar-productos()
-    ;; (escribir 3 1 "01. Cereales")
-    ;; (escribir 3 22 "03.00")
-    ;; (escribir 4 1 "03. Pan de molde")
-    ;; (escribir 4 22 "01.00")
-    ;; (escribir 5 1 "05. Gaseosa")
-    ;; (escribir 5 22 "02.00")
-    ;; (escribir 6 1 "07. Agua")
-    ;; (escribir 6 22 "01.00")
-    ;; (escribir 7 1 "09. Muffin")
-    ;; (escribir 7 22 "03.00")
-    ;; (escribir 8 1 "11. Huevos")
-    ;; (escribir 8 22 "04.00")
-    ;; (escribir 9 1 "13. Trufa")
-    ;; (escribir 9 22 "14.00")
-    ;; (escribir 10 1 "15. Harina")
-    ;; (escribir 10 22 "01.00")
-    ;; (escribir 11 1 "17. Cookie")
-    ;; (escribir 11 22 "02.00")
-    ;; (escribir 12 1 "19. Vino")
-    ;; (escribir 12 22 "26.00")
-    ;; (escribir 3 29 "02. Hielo")
-    ;; (escribir 3 49 "03.00")
-    ;; (escribir 4 29 "04. Cecina")
-    ;; (escribir 4 49 "10.00")
-    ;; (escribir 5 29 "06. Whisky")
-    ;; (escribir 5 49 "30.00")
-    ;; (escribir 6 29 "08. Pack de leche")
-    ;; (escribir 6 49 "07.00")
-    ;; (escribir 7 29 "10. Berberecho")
-    ;; (escribir 7 49 "21.00")
-    ;; (escribir 8 29 "12. Cigalas")
-    ;; (escribir 8 49 "45.00")
-    ;; (escribir 9 29 "14. Caviar")
-    ;; (escribir 9 49 "75.00")
-    ;; (escribir 10 29 "16. Langostinos")
-    ;; (escribir 10 49 "45.00")
-    ;; (escribir 11 29 "18. Calamar")
-    ;; (escribir 11 49 "42.00")
-    ;; (escribir 12 29 "20. Pizza")
-    ;; (escribir 12 49 "05.00")
-    ;; (goto-xy 0 22)
-)
+(defun listar-productos ()
+    (setq i 0)
+    (dotimes (i 10)
+        (setq fila (+ 3 i))
+        (escribir fila 1 (format nil "~2,'0d. ~16a ~5,2f" (+ 1 (* 2 i)) 
+            (producto-nombre (aref productos (* 2 i))) (producto-precio (aref productos (* 2 i)))))
+        (escribir fila 28 (format nil "~2,'0d. ~16a ~5,2f" (+ 2 (* 2 i)) 
+            (producto-nombre (aref productos (+ 1 (* 2 i)))) (producto-precio (aref productos (+ 1 (* 2 i))))))
+        (setq i (+ 1 i))))
 
 ;-----------------------------------------------------
 ; Inicializa la lista de productos leyendo desde el 
@@ -91,7 +58,7 @@
                 (setq nombre-producto (read-line fichero nil))
                 (setq precio-producto (read-line fichero nil))
                 (setf (aref productos i) (make-producto :nombre nombre-producto
-                    :precio precio-producto))))))
+                    :precio 35.5))))))
 
 ;-----------------------------------------------------
 ; Visualiza el indicador del número de pedido dado en
@@ -114,6 +81,12 @@
     (cond ((and (>= n 0) (< n 20)) 
         (visualizador (format nil "img\\producto~a.img" n) 440 174 200))))
 
+;-----------------------------------------------------
+; Visualiza la imagen del logo del programa. 
+;-----------------------------------------------------
+(defun logo ()
+    (visualizador "img\\logo.img" 440 174 200) ; logo del programa
+)
 ;;-----------------------------------------------------------------------------
 ;; FUNCIONES BÁSICAS
 ;;-----------------------------------------------------------------------------
@@ -207,7 +180,7 @@
 ;-----------------------------------------------------
 (defun escribir (linea columna TEXTO)
 	(goto-xy columna linea)
-	(princ TEXTO)
+	(format t TEXTO)
 )
 
 ;;-----------------------------------------------------------------------------
