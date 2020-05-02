@@ -187,20 +187,34 @@
 
 ;-----------------------------------------------------
 ; Convierte la representación en string de un float 
-; en un float y lo devuelve.
+; en un float y lo devuelve. Solo funciona con números
+; positivos.
 ;-----------------------------------------------------
 (defun parse-float (s)
-    (if (> (count #\. s) 1) (return))
-    (setq l (length s))
+    (if (> (count #\. s) 1) nil)
+    (setq lf (length s))
     )
 
 ;-----------------------------------------------------
-; Determina si un número en código representa un 
-; dígito numérico. Devuelve t si se cumple y nil si no.
+; Convierte la representación en string de un integer 
+; en un integer y lo devuelve. Solo funciona con 
+; números positivos.
 ;-----------------------------------------------------
-(defun es-numero (n)
-    (cond ((and (> n 47) (< n 58)) t)
-        (t nil)))
+(defun parse-integer (s)
+    (setq ni 0)
+    (setq li (length s))
+    (dotimes (j li)
+        (setq ni (+ ni (* (- (char-code (char s j)) 48) 
+            (expt 10 (- li j 1))))))
+    ni)
+
+;; ;-----------------------------------------------------
+;; ; Determina si un número en código representa un 
+;; ; dígito numérico. Devuelve t si se cumple y nil si no.
+;; ;-----------------------------------------------------
+;; (defun es-numero (n)
+;;     (cond ((and (> n 47) (< n 58)) t)
+;;         (t nil)))
 
 ;;-----------------------------------------------------------------------------
 ;; ESTRUCTURAS
