@@ -188,12 +188,19 @@
 ;-----------------------------------------------------
 ; Convierte la representación en string de un float 
 ; en un float y lo devuelve. Solo funciona con números
-; positivos.
+; positivos. La coma de los números decimales tiene 
+; que ser un punto (".").
 ;-----------------------------------------------------
 (defun parse-float (s)
-    (if (> (count #\. s) 1) nil)
+    (setq nf 0)
     (setq lf (length s))
-    )
+    (setq pp (position #\. s))  ; Posición del punto
+    (cond ((not pp) (setq nf (parse-integer s)))  ; No hay parte decimal
+        (t (setq nf (parse-integer (subseq s 0 pp)))
+            (dotimes (i (- lf pp 1))
+                (setq nf (+ nf (* (- (char-code (char s (+ pp i 1))) 48) 
+                    (expt 10 (- (+ i 1)))))))))
+    (float nf))
 
 ;-----------------------------------------------------
 ; Convierte la representación en string de un integer 
