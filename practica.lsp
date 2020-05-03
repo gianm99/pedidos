@@ -19,22 +19,7 @@
 )
 
 ;-----------------------------------------------------
-; Dibuja las figuras del fondo del programa que se
-; mantienen fijas.
-;-----------------------------------------------------
-(defun fondo ()
-    (cls)
-    (rectangulo-relleno 0 0 0 1 333 436 373) ; rectangulo del titulo
-    (visualizar-palabra "productos" 84 342 2 10)
-    (rectangulo 1 174 436 330) ; espacio de la lista de productos
-    (rectangulo-relleno 0 0 0 1 136 637 170) ; letrero del pedido
-    (rectangulo 1 33 637 133) ; espacio de productos del pedido
-    (rectangulo 1 0 330 30) ; espacio del menu
-    (rectangulo-relleno 0 0 0 331 0 637 30) ; espacio del total
-)
-
-;-----------------------------------------------------
-; Imprime la lista de los prodctos con su precio.
+; Imprime la lista de los productos con su precio.
 ;-----------------------------------------------------
 (defun listar-productos ()
     (setq i 0)
@@ -62,7 +47,48 @@
                 (setf (aref productos i)
                     (make-producto
                         :nombre nombre-producto
-                        :precio precio-producto))))))
+                        :precio precio-producto
+                        :id i))))
+        (close fichero)))
+
+;-----------------------------------------------------
+; Inicializa una instancia de la estructura pedido y 
+; le asigna numero como número de pedido.
+;-----------------------------------------------------
+(defun inicializar-pedido (numero)
+    (setq pedido 
+        (make-pedido :numero numero
+            :total 0
+            :items '())))
+
+;-----------------------------------------------------
+; Inicializa una instancia de la estructura item y la 
+; añade al pedido actual. Se le asigna el producto y 
+; la cantidad pasados como argumentos.
+;-----------------------------------------------------
+(defun incluir-item (producto cantidad)
+    (setq item
+        (make-item :producto producto
+            :cantidad cantidad
+            :subtotal (* cantidad (producto-precio producto))))
+    (setf (pedido-items pedido) (append (pedido-items pedido) (list item)))
+    (setf (pedido-total pedido) (+ (pedido-total pedido) (item-subtotal item)))
+)
+
+;-----------------------------------------------------
+; Dibuja las figuras del fondo del programa que se
+; mantienen fijas.
+;-----------------------------------------------------
+(defun fondo ()
+    (cls)
+    (rectangulo-relleno 0 0 0 1 333 436 373) ; rectangulo del titulo
+    (visualizar-palabra "productos" 84 342 2 10)
+    (rectangulo 1 174 436 330) ; espacio de la lista de productos
+    (rectangulo-relleno 0 0 0 1 136 637 170) ; letrero del pedido
+    (rectangulo 1 33 637 133) ; espacio de productos del pedido
+    (rectangulo 1 0 330 30) ; espacio del menu
+    (rectangulo-relleno 0 0 0 331 0 637 30) ; espacio del total
+)
 
 
 ;;*****************************************************************************
@@ -222,20 +248,30 @@
 ;;                                  ESTRUCTURAS
 ;;*****************************************************************************
 
+;-----------------------------------------------------
+; Representa un producto en concreto.
+;-----------------------------------------------------
 (defstruct producto
     nombre
     precio
-    id
+    id  ; Id único del producto
 )
 
+;-----------------------------------------------------
+; Representa un pedido de productos.
+;-----------------------------------------------------
 (defstruct pedido
-    numero
-    total
-    items
+    numero  ; Número de pedido
+    total  ; Coste total del pedido
+    items  ; Lista de ítems del pedido
 )
 
+;-----------------------------------------------------
+; Representa un componente de un pedido relacionando 
+; los productos con las cantidades.
+;-----------------------------------------------------
 (defstruct item
     producto
     cantidad
-    subtotal
+    subtotal  ; Precio del producto * Cantidad
 )
