@@ -5,7 +5,7 @@
 ; Autores:      Gian Lucas Martín Chamorro
 ;               Irene Vera Barea
 ; Asignatura:   21721 - Lenguajes de Programación
-;-----------------------------------------------------
+;----------------------------------------------------- --
 
 ;-----------------------------------------------------
 ; Inicia la ejecución del programa de creación de
