@@ -1,6 +1,18 @@
-"""Programa que elimina el encabezado de los ficheros .bmp de un directorio y
-    los guarda como .img en otro directorio.
 """
+    Programa de conversión de imágenes BMP 24 bits a imágenes IMG.
+    Convierte todas las imágenes BMP de un directorio y las guarda como IMG
+    en otro directorio. Si no se indican los directorios de entrada y de
+    salida, el programa realiza la conversión con los directorios por defecto.
+    Instrucciones de uso:
+    -h
+    Muestra cómo se usa el programa.
+    -i <inputdirectory>
+    Para indicar el directorio en el que se encuentran las imágenes BMP.
+    -o <outputdirectory>
+    Para indicar el directorio en el que se guardarán las imágenes IMG.
+"""
+
+
 import sys
 import getopt
 import os
@@ -23,11 +35,11 @@ def main(argv):
     try:
         opts, args = getopt.getopt(argv, "hi:o:")
     except getopt.GetoptError:
-        print('bmp-to-img.py -i <inputdirectory> -o <outputdirectory>')
+        print('conversor.py -i <inputdirectory> -o <outputdirectory>')
         sys.exit(2)
     for opt, arg in opts:
         if opt == '-h':
-            print('bmp-to-img.py -i <inputdirectory> -o <outputdirectory>')
+            print('conversor.py -i <inputdirectory> -o <outputdirectory>')
             sys.exit()
         elif opt == '-i':
             inputdirectory = arg

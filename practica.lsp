@@ -52,18 +52,18 @@
         (close fichero)))
 
 ;-----------------------------------------------------
-; Inicializa una instancia de la estructura pedido y 
+; Inicializa una instancia de la estructura pedido y
 ; le asigna numero como número de pedido.
 ;-----------------------------------------------------
 (defun inicializar-pedido (numero)
-    (setq pedido 
+    (setq pedido
         (make-pedido :numero numero
             :total 0
             :items '())))
 
 ;-----------------------------------------------------
-; Inicializa una instancia de la estructura item y la 
-; añade al pedido actual. Se le asigna el producto y 
+; Inicializa una instancia de la estructura item y la
+; añade al pedido actual. Se le asigna el producto y
 ; la cantidad pasados como argumentos.
 ;-----------------------------------------------------
 (defun incluir-item (producto cantidad)
@@ -267,7 +267,7 @@
 )
 
 ;-----------------------------------------------------
-; Representa un componente de un pedido relacionando 
+; Representa un componente de un pedido relacionando
 ; los productos con las cantidades.
 ;-----------------------------------------------------
 (defstruct item
