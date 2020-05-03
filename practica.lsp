@@ -59,37 +59,15 @@
             (dotimes (i 20)
                 (setq nombre-producto (read-line fichero nil))
                 (setq precio-producto (parse-float (read-line fichero nil)))
-                (setf (aref productos i) 
-                    (make-producto 
+                (setf (aref productos i)
+                    (make-producto
                         :nombre nombre-producto
                         :precio precio-producto))))))
 
-;-----------------------------------------------------
-; Visualiza el indicador del número de pedido dado en
-; la pantalla usando imágenes. Solo funciona para n
-; tal que 0 <= n < 100.
-;-----------------------------------------------------
-(defun indicador-pedido (n)
-    (visualizar-palabra 
-        (format nil "~30a" (format nil "pedido ~2,'0d" n)) 5 144 2 1))
 
-;-----------------------------------------------------
-; Visualiza la imagen que corresponda al número n. Si
-; n es menor a 0 o mayor a 19 no hace nada.
-;-----------------------------------------------------
-(defun imagen-producto (n)
-    (cond ((and (>= n 0) (< n 20))
-        (visualizador (format nil "img\\producto~a.img" n) 440 174 200))))
-
-;-----------------------------------------------------
-; Visualiza la imagen del logo del programa.
-;-----------------------------------------------------
-(defun logo ()
-    (visualizador "img\\logo.img" 440 174 200) ; logo del programa
-)
-;;-----------------------------------------------------------------------------
-;; FUNCIONES BÁSICAS
-;;-----------------------------------------------------------------------------
+;;*****************************************************************************
+;;                              FUNCIONES BÁSICAS
+;;*****************************************************************************
 
 ;-----------------------------------------------------
 ; Dibuja un rectángulo a partir de la coordenada
@@ -122,9 +100,9 @@
 (defun visualizar-letra (letra x y tipo)
 	(if (equal letra " ") (setq letra "")) ; el caso de la letra espacio
     (cond ((= tipo 1)
-            (visualizador (concatenate 'string "img/" letra ".img") x y 52))
+            (visualizador (format nil "img/~a.img" letra) x y 52))
 		((= tipo 2)
-            (visualizador (concatenate 'string "img/" letra "_NB.img") x y 20))))
+            (visualizador (format nil "img/~a_NB.img" letra) x y 20))))
 
 ;-----------------------------------------------------
 ; Dada una palabra la visualiza, letra a letra, a
@@ -137,8 +115,8 @@
     (dotimes (i (length palabra))
 		(visualizar-letra (string (aref palabra i)) x y tipo)
 		(color 0 0 0)
-	    (if (= tipo 1) 
-            (setq x (+ 52 x espaciado)) 
+	    (if (= tipo 1)
+            (setq x (+ 52 x espaciado))
             (setq x (+ 20 x espaciado)))))
 
 ;-----------------------------------------------------
@@ -215,12 +193,49 @@
             (expt 10 (- li j 1))))))
     ni)
 
-;;-----------------------------------------------------------------------------
-;; ESTRUCTURAS
-;;-----------------------------------------------------------------------------
+;-----------------------------------------------------
+; Visualiza el indicador del número de pedido dado en
+; la pantalla usando imágenes. Solo funciona para n
+; tal que 0 <= n < 100.
+;-----------------------------------------------------
+(defun indicador-pedido (n)
+    (visualizar-palabra
+        (format nil "~30a" (format nil "pedido ~2,'0d" n)) 5 144 2 1))
+
+;-----------------------------------------------------
+; Visualiza la imagen que corresponda al número n. Si
+; n es menor a 0 o mayor a 19 no hace nada.
+;-----------------------------------------------------
+(defun imagen-producto (n)
+    (cond ((and (>= n 0) (< n 20))
+        (visualizador (format nil "img/producto~a.img" n) 440 174 200))))
+
+;-----------------------------------------------------
+; Visualiza la imagen del logo del programa.
+;-----------------------------------------------------
+(defun logo ()
+    (visualizador "img/logo.img" 440 174 200) ; logo del programa
+)
+
+
+;;*****************************************************************************
+;;                                  ESTRUCTURAS
+;;*****************************************************************************
 
 (defstruct producto
     nombre
     precio
     id
+)
+
+(defstruct pedido
+    numero
+    total
+    items
+)
+
+(defstruct item
+    producto
+    cantidad
+    subtotal
 )
