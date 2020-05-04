@@ -52,18 +52,18 @@
         (close fichero)))
 
 ;-----------------------------------------------------
-; Inicializa una instancia de la estructura pedido y 
+; Inicializa una instancia de la estructura pedido y
 ; le asigna numero como número de pedido.
 ;-----------------------------------------------------
 (defun inicializar-pedido (numero)
-    (setq pedido 
+    (setq pedido
         (make-pedido :numero numero
             :total 0
             :items '())))
 
 ;-----------------------------------------------------
-; Inicializa una instancia de la estructura item y la 
-; añade al pedido actual. Se le asigna el producto y 
+; Inicializa una instancia de la estructura item y la
+; añade al pedido actual. Se le asigna el producto y
 ; la cantidad pasados como argumentos.
 ;-----------------------------------------------------
 (defun incluir-item (producto cantidad)
@@ -74,6 +74,32 @@
     (setf (pedido-items pedido) (append (pedido-items pedido) (list item)))
     (setf (pedido-total pedido) (+ (pedido-total pedido) (item-subtotal item)))
 )
+
+;-----------------------------------------------------
+; Guarda el pedido actual en un fichero de texto. El
+; fichero se llamará pedidoXX.txt, siendo XX el número
+; del pedido. Si ya existe, se sobreescribirá.
+;-----------------------------------------------------
+(defun guardar-pedido ()
+    (let ((fichero (open (format nil "pedido~2,'0d.txt" (pedido-numero pedido))
+        :direction :output
+        :if-exists :supersede
+        :if-does-not-exist :create)))
+        (when fichero
+            (format fichero "PEDIDO ~2,'0d~%" (pedido-numero pedido))
+            (format fichero "~17@a~35@a~36@a~%"
+                "PRODUCTOS"
+                "UNIDADES"
+                "IMPORTE")
+            (dotimes (i  (length (pedido-items pedido)))
+                (setf item (nth i (pedido-items pedido)))
+                (format fichero "~16a~33d~37,2f euros~%"
+                    (producto-nombre (item-producto item))
+                    (item-cantidad item)
+                    (item-subtotal item)))
+            (format fichero "TOTAL PEDIDO~11,2f euros~%"
+                (pedido-total pedido)))
+        (close fichero)))
 
 ;-----------------------------------------------------
 ; Dibuja las figuras del fondo del programa que se
@@ -267,7 +293,7 @@
 )
 
 ;-----------------------------------------------------
-; Representa un componente de un pedido relacionando 
+; Representa un componente de un pedido relacionando
 ; los productos con las cantidades.
 ;-----------------------------------------------------
 (defstruct item
