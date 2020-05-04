@@ -76,6 +76,32 @@
 )
 
 ;-----------------------------------------------------
+; Guarda el pedido actual en un fichero de texto. El
+; fichero se llamará pedidoXX.txt, siendo XX el número
+; del pedido. Si ya existe, se sobreescribirá.
+;-----------------------------------------------------
+(defun guardar-pedido ()
+    (let ((fichero (open (format nil "pedido~2,'0d.txt" (pedido-numero pedido))
+        :direction :output
+        :if-exists :supersede
+        :if-does-not-exist :create)))
+        (when fichero
+            (format fichero "PEDIDO ~2,'0d~%" (pedido-numero pedido))
+            (format fichero "~17@a~35@a~36@a~%"
+                "PRODUCTOS"
+                "UNIDADES"
+                "IMPORTE")
+            (dotimes (i  (length (pedido-items pedido)))
+                (setf item (nth i (pedido-items pedido)))
+                (format fichero "~16a~33d~37,2f euros~%"
+                    (producto-nombre (item-producto item))
+                    (item-cantidad item)
+                    (item-subtotal item)))
+            (format fichero "TOTAL PEDIDO~11,2f euros~%"
+                (pedido-total pedido)))
+        (close fichero)))
+
+;-----------------------------------------------------
 ; Dibuja las figuras del fondo del programa que se
 ; mantienen fijas.
 ;-----------------------------------------------------

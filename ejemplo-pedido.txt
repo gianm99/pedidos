@@ -1,0 +1,8 @@
+PEDIDO 01
+        PRODUCTOS                           UNIDADES                             IMPORTE
+producto 19                                     2                                20.00 euros
+producto 04                                     3                                39.00 euros
+producto 17                                     1                               12.00 euros
+producto 20                                     2                               68.00 euros
+mascarilla                                    150                             1500.00 euros
+TOTAL PEDIDO    1639.00 euros
