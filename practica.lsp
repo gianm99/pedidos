@@ -16,6 +16,7 @@
     (inicializar-lista "productos.txt")
     (listar-productos)
     (logo)
+    (menu)
 )
 
 ;-----------------------------------------------------
@@ -88,6 +89,84 @@
     (rectangulo 1 33 637 133) ; espacio de productos del pedido
     (rectangulo 1 0 330 30) ; espacio del menu
     (rectangulo-relleno 0 0 0 331 0 637 30) ; espacio del total
+)
+;-----------------------------------------------------
+; Menú con el que interactúa el usuario.
+; Inicia un pedido, pide el número de pedido,
+; muestra el número de pedido, permite seleccionar
+; producto, las unidades de este y el total del pedido
+; Finalmente, guarda todo en un archivo e informa
+; al usuario.
+;-----------------------------------------------------
+(defun menu()
+    (goto-xy 0 23)
+    (iniciar-pedido)
+    (anadir-productos)
+    ;(continuar-pedido)
+)
+
+;-----------------------------------------------------
+; Pide al usuario si quiere iniciar el pedido
+;-----------------------------------------------------
+
+(defun iniciar-pedido()
+    (princ " [] INICIAR PEDIDO (S/N): ")
+    (setq a (read))
+    (cond ((string-equal a "S") (pedir-numero))
+        (t (menu))
+    )
+    (total (pedido-total pedido))
+    (goto-xy 0 23)
+)
+
+;-----------------------------------------------------
+; Pide el número de pedido, lo inicializa y lo 
+; imprime en pantalla.
+;-----------------------------------------------------
+(defun pedir-numero()
+    (goto-xy 0 23)
+    (princ " [] Num de pedido: ")
+    (setq num (read))
+    (inicializar-pedido num)
+    (indicador-pedido num)
+)
+
+;-----------------------------------------------------
+; Pide el número del producto que desea añadir,
+; las cantidades que quiere de este y confirma
+; si lo que pide es correcto para añadirlo al pedido.
+;-----------------------------------------------------
+
+(defun anadir-productos()
+    (goto-xy 0 23)
+    (princ " [] NUMERO DE PRODUCTO: ")
+    (setq num (read))
+    (imagen-producto num)
+    (setq str (concatenate 'string " [] UNIDADES " (producto-nombre (aref productos (- num 1))) ": "))
+    (goto-xy 0 23)
+    (princ str)
+    (setq cant (read)) 
+    (goto-xy 0 23)
+    (format t "~A ~D ~A ~A ~A" " [] " cant " DE " (producto-nombre (aref productos (- num 1))) " (S/N): ")
+    (setq confirm (read))
+    (goto-xy 0 23)
+    (cond ((string-equal confirm "S") (incluir-item (aref productos (- num 1)) cant) (total (pedido-total pedido)))
+        (t (continuar-pedido))
+    )
+    (continuar-pedido)
+)
+
+;-----------------------------------------------------
+; Pide al usuario si quiere continuar con el pedido.
+;-----------------------------------------------------
+
+(defun continuar-pedido()
+    (goto-xy 0 23)
+    (princ "[] CONTINUAR PEDIDO (S/N): ")
+    (setq continuar(read))
+    (cond ((string-equal continuar "S") (anadir-productos))
+        (t (print "hola"))
+    )
 )
 
 
@@ -243,6 +322,16 @@
     (visualizador "img/logo.img" 440 174 200) ; logo del programa
 )
 
+(defun total(n)
+     (visualizar-palabra "total" 334 6 2 1)
+
+    (cond ((< n 100) (visualizar-palabra (format nil "~30a" (format nil "0000~2,'0d" n)) 444 6 2 1))
+        ((< n 1000) (visualizar-palabra (format nil "~30a" (format nil "000~2,'0d" n)) 444 6 2 1) )
+        ((<n 10000) (visualizar-palabra (format nil "~30a" (format nil "00~2,'0d" n)) 444 6 2 1))
+        ((< n 100000) (visualizar-palabra (format nil "~30a" (format nil "0~2,'0d" n)) 444 6 2 1))
+        (t (visualizar-palabra (format nil "~30a" (format nil "~2,'0d" n)) 444 6 2 1))
+    ) 
+)
 
 ;;*****************************************************************************
 ;;                                  ESTRUCTURAS
