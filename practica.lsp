@@ -125,10 +125,8 @@
 ; al usuario.
 ;-----------------------------------------------------
 (defun menu()
-    (goto-xy 0 23)
     (iniciar-pedido)
     (anadir-productos)
-    ;(continuar-pedido)
 )
 
 ;-----------------------------------------------------
@@ -136,6 +134,8 @@
 ;-----------------------------------------------------
 
 (defun iniciar-pedido()
+    (borrar 23 0 40)
+    (goto-xy 0 23)
     (princ " [] INICIAR PEDIDO (S/N): ")
     (setq a (read))
     (cond ((string-equal a "S") (pedir-numero))
@@ -150,6 +150,7 @@
 ; imprime en pantalla.
 ;-----------------------------------------------------
 (defun pedir-numero()
+    (borrar 23 0 40)
     (goto-xy 0 23)
     (princ " [] Num de pedido: ")
     (setq num (read))
@@ -164,6 +165,7 @@
 ;-----------------------------------------------------
 
 (defun anadir-productos()
+    (borrar 23 0 40)
     (goto-xy 0 23)
     (princ " [] NUMERO DE PRODUCTO: ")
     (setq num (read))
@@ -176,6 +178,7 @@
     (format t "~A ~D ~A ~A ~A" " [] " cant " DE " (producto-nombre (aref productos (- num 1))) " (S/N): ")
     (setq confirm (read))
     (goto-xy 0 23)
+    (logo)
     (cond ((string-equal confirm "S") (incluir-item (aref productos (- num 1)) cant) (total (pedido-total pedido)))
         (t (continuar-pedido))
     )
@@ -187,11 +190,12 @@
 ;-----------------------------------------------------
 
 (defun continuar-pedido()
+    (borrar 23 0 40)
     (goto-xy 0 23)
     (princ "[] CONTINUAR PEDIDO (S/N): ")
     (setq continuar(read))
     (cond ((string-equal continuar "S") (anadir-productos))
-        (t (print "hola"))
+        (t (guardar-pedido))
     )
 )
 
@@ -349,14 +353,8 @@
 )
 
 (defun total(n)
-     (visualizar-palabra "total" 334 6 2 1)
-
-    (cond ((< n 100) (visualizar-palabra (format nil "~30a" (format nil "0000~2,'0d" n)) 444 6 2 1))
-        ((< n 1000) (visualizar-palabra (format nil "~30a" (format nil "000~2,'0d" n)) 444 6 2 1) )
-        ((<n 10000) (visualizar-palabra (format nil "~30a" (format nil "00~2,'0d" n)) 444 6 2 1))
-        ((< n 100000) (visualizar-palabra (format nil "~30a" (format nil "0~2,'0d" n)) 444 6 2 1))
-        (t (visualizar-palabra (format nil "~30a" (format nil "~2,'0d" n)) 444 6 2 1))
-    ) 
+    (visualizar-palabra (format nil "total") 334 6 2 1)
+    (visualizar-palabra (format nil "~9,2,'0f" n) 444 6 2 1)
 )
 
 ;;*****************************************************************************
