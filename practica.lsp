@@ -72,9 +72,8 @@
         (make-item :producto producto
             :cantidad cantidad
             :subtotal (* cantidad (producto-precio producto))))
-    (setf (pedido-items pedido) (append (pedido-items pedido) (list item)))
-    (setf (pedido-total pedido) (+ (pedido-total pedido) (item-subtotal item)))
-)
+    (setf (pedido-items pedido) (append (pedido-items pedido) (list item))
+        (pedido-total pedido) (+ (pedido-total pedido) (item-subtotal item))))
 
 ;-----------------------------------------------------
 ; Guarda el pedido actual en un fichero de texto. El
@@ -84,8 +83,8 @@
 (defun guardar-pedido ()
     (let ((fichero (open (format nil "pedido~2,'0d.txt" (pedido-numero pedido))
         :direction :output
-        :if-exists :supersede
-        :if-does-not-exist :create)))
+        :if-exists :supersede  ; Sobreescribir si existe
+        :if-does-not-exist :create)))  ; Crear si no existe
         (when fichero
             (format fichero "PEDIDO ~2,'0d~%" (pedido-numero pedido))
             (format fichero "~17@a~35@a~36@a~%"
@@ -116,8 +115,8 @@
     (rectangulo 1 0 330 30) ; espacio del menu
     (rectangulo-relleno 0 0 0 331 0 637 30) ; espacio del total
 )
+
 ;-----------------------------------------------------
-; Menú con el que interactúa el usuario.
 ; Inicia un pedido, pide el número de pedido,
 ; muestra el número de pedido, permite seleccionar
 ; producto, las unidades de este y el total del pedido
@@ -126,13 +125,11 @@
 ;-----------------------------------------------------
 (defun menu()
     (iniciar-pedido)
-    (anadir-productos)
-)
+    (anadir-productos))
 
 ;-----------------------------------------------------
 ; Pide al usuario si quiere iniciar el pedido
 ;-----------------------------------------------------
-
 (defun iniciar-pedido()
     (borrar 23 2 40)
     (goto-xy 1 23)
@@ -142,88 +139,86 @@
         (t (menu))
     )
     (total (pedido-total pedido))
-    (goto-xy 1 23)
-)
+    (goto-xy 1 23))
 
 ;-----------------------------------------------------
-; Pide el número de pedido, lo inicializa y lo 
+; Pide el número de pedido, lo inicializa y lo
 ; imprime en pantalla.
 ;-----------------------------------------------------
 (defun pedir-numero()
     (borrar 23 2 40)
     (goto-xy 1 23)
-    (princ "[] Num de pedido: ")
+    (princ "[] Numero de pedido: ")
     (setq num (read))
     (inicializar-pedido num)
-    (indicador-pedido num)
-)
+    (indicador-pedido num))
 
 ;-----------------------------------------------------
 ; Pide el número del producto que desea añadir,
 ; las cantidades que quiere de este y confirma
 ; si lo que pide es correcto para añadirlo al pedido.
 ;-----------------------------------------------------
-
 (defun anadir-productos()
     (borrar 23 2 40)
     (goto-xy 1 23)
     (princ "[] Numero de producto: ")
     (setq num (read))
-    
-    (cond ((or (< num 0) (> num 20)) 
+
+    (cond ((or (< num 0) (> num 20))
         (borrar 23 2 40)
-        (goto-xy 1 23) 
-        (princ "[] No existe. Insertar otro (S/N):")
+        (goto-xy 1 23)
+        (princ "[] No existe. Insertar otro (S/N): ")
         (setq insertarnuevo (read))
             (cond ((string-equal insertarnuevo "S") (anadir-productos))
-            (t (continuar-pedido))
-            )
-        )
-        (t 
+            (t (continuar-pedido))))
+        (t
             (imagen-producto num)
             (borrar 23 2 40)
             (goto-xy 1 23)
-            (setq str (format nil "~A ~A ~A" "[] Unidades de " (producto-nombre (aref productos (- num 1)))": "))
-            (princ str)
-            (setq cant (read)) 
+            (format t "[] Unidades de ~a: "
+                (producto-nombre (aref productos (- num 1))))
+            (setq cant (read))
             (borrar 23 2 40)
             (goto-xy 1 23)
-            (format t "~A ~D ~A ~A ~A" "[] " cant " de " (producto-nombre (aref productos (- num 1))) " (S/N): ")
+            (format t "[] ~d de ~a (S/N): "
+                cant
+                (producto-nombre (aref productos (- num 1))))
             (setq confirm (read))
             (goto-xy 1 23)
             (logo)
-            (cond ((string-equal confirm "S") (incluir-item (aref productos (- num 1)) cant) (total (pedido-total pedido)))
-                (t (continuar-pedido))
-            )
-            (continuar-pedido))
-        )
-)    
+            (cond ((string-equal confirm "S")
+                    (incluir-item (aref productos (- num 1)) cant)
+                    (total (pedido-total pedido)))
+                (t (continuar-pedido)))
+            (continuar-pedido))))
 
 
 ;-----------------------------------------------------
 ; Pide al usuario si quiere continuar con el pedido.
+; Si se quiere continuar se le pide que añada más
+; productos, si no se guarda el pedido y se pregunta
+; si quiere hacer otro.
 ;-----------------------------------------------------
-
 (defun continuar-pedido()
     (borrar 23 2 40)
     (goto-xy 1 23)
     (princ "[] Continuar pedido (S/N): ")
     (setq continuar(read))
     (cond ((string-equal continuar "S") (anadir-productos))
-        (t (guardar-pedido) 
-            (nuevo-pedido))
-    )
-)
+        (t (guardar-pedido)
+            (nuevo-pedido))))
 
+;-----------------------------------------------------
+; Informa al usuario de que se ha guardado su pedido
+; y le pregunta si quiere hacer otro.
+;-----------------------------------------------------
 (defun nuevo-pedido()
-    (borrar 23 2 40) 
-    (goto-xy 1 23) 
-    (princ "[] Pedido guardado. Nuevo pedido (S/N):")
+    (borrar 23 2 40)
+    (goto-xy 1 23)
+    (princ "[] Guardado. Nuevo pedido (S/N): ")
     (setq nuevoPedido(read))
     (cond ((string-equal nuevoPedido "S") (menu))
-        (t (exit))
-    )
-)
+        (t (exit))))
 
 
 ;;*****************************************************************************
@@ -286,7 +281,9 @@
 ; dimensión x dimension
 ;-----------------------------------------------------
 (defun visualizador (imagen a b dimension)
-    (setq fichero (open imagen :direction :input :element-type 'unsigned-byte))
+    (setq fichero (open imagen
+        :direction :input
+        :element-type 'unsigned-byte))
     (setq x a y b)
     (dotimes (i dimension)
         (move x y)
