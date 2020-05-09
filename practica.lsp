@@ -81,7 +81,7 @@
 ; del pedido. Si ya existe, se sobreescribirá.
 ;-----------------------------------------------------
 (defun guardar-pedido ()
-    (let ((fichero (open (format nil "pedido~2,'0d.txt" (pedido-numero pedido))
+    (let ((fichero (open (format nil "pedidos/pedido~2,'0d.txt" (pedido-numero pedido))
         :direction :output
         :if-exists :supersede  ; Sobreescribir si existe
         :if-does-not-exist :create)))  ; Crear si no existe
