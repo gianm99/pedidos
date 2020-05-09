@@ -131,14 +131,13 @@
 ; Pide al usuario si quiere iniciar el pedido
 ;-----------------------------------------------------
 (defun iniciar-pedido()
-    (borrar 23 2 40)
-    (goto-xy 1 23)
+    (limpiar-menu)
     (princ "[] Iniciar pedido (S/N): ")
     (setq a (read))
     (cond ((string-equal a "S") (pedir-numero))
         (t (menu))
     )
-    (total (pedido-total pedido))
+    (mostrar-total (pedido-total pedido))
     (goto-xy 1 23))
 
 ;-----------------------------------------------------
@@ -146,8 +145,7 @@
 ; imprime en pantalla.
 ;-----------------------------------------------------
 (defun pedir-numero()
-    (borrar 23 2 40)
-    (goto-xy 1 23)
+    (limpiar-menu)
     (princ "[] Numero de pedido: ")
     (setq num (read))
     (inicializar-pedido num)
@@ -159,39 +157,30 @@
 ; si lo que pide es correcto para añadirlo al pedido.
 ;-----------------------------------------------------
 (defun anadir-productos()
-    (borrar 23 2 40)
-    (goto-xy 1 23)
+    (limpiar-menu)
     (princ "[] Numero de producto: ")
     (setq num (read))
-
-    (cond ((or (< num 0) (> num 20))
-        (borrar 23 2 40)
-        (goto-xy 1 23)
+    (if (or (< num 0) (> num 20))
+        ((limpiar-menu)
         (princ "[] No existe. Insertar otro (S/N): ")
         (setq insertarnuevo (read))
-            (cond ((string-equal insertarnuevo "S") (anadir-productos))
-            (t (continuar-pedido))))
-        (t
-            (imagen-producto num)
-            (borrar 23 2 40)
-            (goto-xy 1 23)
-            (format t "[] Unidades de ~a: "
-                (producto-nombre (aref productos (- num 1))))
-            (setq cant (read))
-            (borrar 23 2 40)
-            (goto-xy 1 23)
-            (format t "[] ~d de ~a (S/N): "
-                cant
-                (producto-nombre (aref productos (- num 1))))
-            (setq confirm (read))
-            (goto-xy 1 23)
-            (logo)
-            (cond ((string-equal confirm "S")
-                    (incluir-item (aref productos (- num 1)) cant)
-                    (total (pedido-total pedido)))
-                (t (continuar-pedido)))
-            (continuar-pedido))))
-
+        (cond ((string-equal insertarnuevo "S") (anadir-productos))
+            (t (continuar-pedido)))))
+    (imagen-producto num)
+    (limpiar-menu)
+    (format t "[] Unidades de ~a: "
+        (producto-nombre (aref productos (- num 1))))
+    (setq cant (read))
+    (limpiar-menu)
+    (format t "[] ~d de ~a (S/N): "
+        cant
+        (producto-nombre (aref productos (- num 1))))
+    (setq confirm (read))
+    (logo)
+    (cond ((string-equal confirm "S")
+            (incluir-item (aref productos (- num 1)) cant)
+            (mostrar-total (pedido-total pedido))))
+    (continuar-pedido))
 
 ;-----------------------------------------------------
 ; Pide al usuario si quiere continuar con el pedido.
@@ -200,8 +189,7 @@
 ; si quiere hacer otro.
 ;-----------------------------------------------------
 (defun continuar-pedido()
-    (borrar 23 2 40)
-    (goto-xy 1 23)
+    (limpiar-menu)
     (princ "[] Continuar pedido (S/N): ")
     (setq continuar(read))
     (cond ((string-equal continuar "S") (anadir-productos))
@@ -213,11 +201,12 @@
 ; y le pregunta si quiere hacer otro.
 ;-----------------------------------------------------
 (defun nuevo-pedido()
-    (borrar 23 2 40)
-    (goto-xy 1 23)
+    (limpiar-menu)
     (princ "[] Guardado. Nuevo pedido (S/N): ")
     (setq nuevoPedido(read))
-    (cond ((string-equal nuevoPedido "S") (menu))
+    (cond ((string-equal nuevoPedido "S") 
+            (tapar-total)
+            (menu))
         (t (exit))))
 
 
@@ -225,27 +214,36 @@
 ;;                              FUNCIONES BÁSICAS
 ;;*****************************************************************************
 
-;-----------------------------------------------------
-; Dibuja un rectángulo a partir de la coordenada
-; (x1,y1) hasta la (x2, y2).
-;-----------------------------------------------------
-(defun rectangulo (x1 y1 x2 y2)
-	(move x1 y1)
-	(draw x1 y2 x2 y2 x2 y1 x1 y1))
 
 ;-----------------------------------------------------
-; Dibuja un rectángulo relleno de color (r,g,b) a
-; partir de la coordenada (x1,y1) hasta la (x2, y2).
+; Convierte la representación en string de un float
+; en un float y lo devuelve. Solo funciona con números
+; positivos. La coma de los números decimales tiene
+; que ser un punto (".").
 ;-----------------------------------------------------
-(defun rectangulo-relleno (r g b x1 y1 x2 y2)
-	(color r g b)
-	(rectangulo x1 y1 x2 y2)
-	(dotimes (i (- y2 y1))
-		(move x1 (+ i y1))
-		(draw x2 (+ i y1))
-	)
-	(color 0 0 0)
-)
+(defun parse-float (s)
+    (setq nf 0)
+    (setq lf (length s))
+    (setq pp (position #\. s))  ; Posición del punto
+    (cond ((not pp) (setq nf (parse-integer s)))  ; No hay parte decimal
+        (t (setq nf (parse-integer (subseq s 0 pp)))
+            (dotimes (i (- lf pp 1))
+                (setq nf (+ nf (* (- (char-code (char s (+ pp i 1))) 48)
+                    (expt 10 (- (+ i 1)))))))))
+    (float nf))  ; Devuelve el número en formato float
+
+;-----------------------------------------------------
+; Convierte la representación en string de un integer
+; en un integer y lo devuelve. Solo funciona con
+; números positivos.
+;-----------------------------------------------------
+(defun parse-integer (s)
+    (setq ni 0)
+    (setq li (length s))
+    (dotimes (j li)
+        (setq ni (+ ni (* (- (char-code (char s j)) 48)
+            (expt 10 (- li j 1))))))
+    ni)  ; Devuelve el número
 
 ;-----------------------------------------------------
 ; Dada una letra visualiza dicha letra utilizando la
@@ -289,9 +287,9 @@
         (move x y)
         (dotimes (j dimension)
             ;leer valores de RGB
-            (setq B (read-byte fichero nil))
-            (setq G (read-byte fichero nil))
-            (setq R (read-byte fichero nil))
+            (setq B (read-byte fichero nil)
+                G (read-byte fichero nil)
+                R (read-byte fichero nil))
             (if (null B) (return ()))
             (color R G B)
             (draw (+ 1 x) y)
@@ -299,57 +297,6 @@
         (setq x a y (+ 1 y))) ; reiniciar x e incrementar y
     (close fichero)
     (color 0 0 0))
-
-;-----------------------------------------------------
-; Borra a partir de la (linea,columna) dada el número
-; de columnas indicado de la pantalla en modo texto.
-;-----------------------------------------------------
-(defun borrar (linea columna numcolumnas)
-	(goto-xy columna linea)
-	(dotimes (i numcolumnas)
-		(princ " ")
-		(goto-xy (+ i columna) linea)
-	)
-)
-
-;-----------------------------------------------------
-; Visualiza el texto dado en la (linea,columna) dada
-; de la pantalla en modo texto.
-;-----------------------------------------------------
-(defun escribir (linea columna TEXTO)
-	(goto-xy columna linea)
-	(format t TEXTO)
-)
-
-;-----------------------------------------------------
-; Convierte la representación en string de un float
-; en un float y lo devuelve. Solo funciona con números
-; positivos. La coma de los números decimales tiene
-; que ser un punto (".").
-;-----------------------------------------------------
-(defun parse-float (s)
-    (setq nf 0)
-    (setq lf (length s))
-    (setq pp (position #\. s))  ; Posición del punto
-    (cond ((not pp) (setq nf (parse-integer s)))  ; No hay parte decimal
-        (t (setq nf (parse-integer (subseq s 0 pp)))
-            (dotimes (i (- lf pp 1))
-                (setq nf (+ nf (* (- (char-code (char s (+ pp i 1))) 48)
-                    (expt 10 (- (+ i 1)))))))))
-    (float nf))
-
-;-----------------------------------------------------
-; Convierte la representación en string de un integer
-; en un integer y lo devuelve. Solo funciona con
-; números positivos.
-;-----------------------------------------------------
-(defun parse-integer (s)
-    (setq ni 0)
-    (setq li (length s))
-    (dotimes (j li)
-        (setq ni (+ ni (* (- (char-code (char s j)) 48)
-            (expt 10 (- li j 1))))))
-    ni)
 
 ;-----------------------------------------------------
 ; Visualiza el indicador del número de pedido dado en
@@ -372,17 +319,72 @@
 ; Visualiza la imagen del logo del programa.
 ;-----------------------------------------------------
 (defun logo ()
-    (visualizador "img/logo.img" 440 174 200) ; logo del programa
-)
+    (visualizador "img/logo.img" 440 174 200)) ; logo del programa
 
-(defun total(n)
+;-----------------------------------------------------
+; Visualiza el coste total del pedido.
+;-----------------------------------------------------
+(defun mostrar-total(n)
     (visualizar-palabra (format nil "total") 334 6 2 1)
-    (visualizar-palabra (format nil "~9,2,'0f" n) 444 6 2 1)
-)
+    (visualizar-palabra (format nil "~9,2,'0f" n) 444 6 2 1))
+
+;-----------------------------------------------------
+; Tapa el indicador de total del pedido.
+;-----------------------------------------------------
+(defun tapar-total ()
+    (rectangulo-relleno 0 0 0 331 0 637 30))
+
+;-----------------------------------------------------
+; Limpia el menú y deja el cursor listo para escribir
+; nueva información.
+;-----------------------------------------------------
+(defun limpiar-menu ()
+    (borrar 23 2 40)  ; borrar lo escrito
+    (goto-xy 1 23))  ; situar el cursor en la posicion inicial
+
+;-----------------------------------------------------
+; Dibuja un rectángulo a partir de la coordenada
+; (x1,y1) hasta la (x2, y2).
+;-----------------------------------------------------
+(defun rectangulo (x1 y1 x2 y2)
+	(move x1 y1)
+	(draw x1 y2 x2 y2 x2 y1 x1 y1))
+
+;-----------------------------------------------------
+; Dibuja un rectángulo relleno de color (r,g,b) a
+; partir de la coordenada (x1,y1) hasta la (x2, y2).
+;-----------------------------------------------------
+(defun rectangulo-relleno (r g b x1 y1 x2 y2)
+	(color r g b)
+	(rectangulo x1 y1 x2 y2)
+	(dotimes (i (- y2 y1))
+		(move x1 (+ i y1))
+		(draw x2 (+ i y1)))
+	(color 0 0 0))
+
+;-----------------------------------------------------
+; Borra a partir de la (linea,columna) dada el número
+; de columnas indicado de la pantalla en modo texto.
+;-----------------------------------------------------
+(defun borrar (linea columna numcolumnas)
+	(goto-xy columna linea)
+	(dotimes (i numcolumnas)
+		(princ " ")
+		(goto-xy (+ i columna) linea)))
+
+;-----------------------------------------------------
+; Visualiza el texto dado en la (linea,columna) dada
+; de la pantalla en modo texto.
+;-----------------------------------------------------
+(defun escribir (linea columna TEXTO)
+	(goto-xy columna linea)
+	(format t TEXTO))
+
 
 ;;*****************************************************************************
 ;;                                  ESTRUCTURAS
 ;;*****************************************************************************
+
 
 ;-----------------------------------------------------
 ; Representa un producto en concreto.
