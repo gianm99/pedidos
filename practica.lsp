@@ -5,7 +5,7 @@
 ; Autores:      Gian Lucas Martín Chamorro
 ;               Irene Vera Barea
 ; Asignatura:   21721 - Lenguajes de Programación
-;-----------------------------------------------------
+;----------------------------------------------------- --
 
 ;-----------------------------------------------------
 ; Inicia la ejecución del programa de creación de
@@ -16,6 +16,7 @@
     (inicializar-lista "productos.txt")
     (listar-productos)
     (logo)
+    (menu)
 )
 
 ;-----------------------------------------------------
@@ -71,9 +72,8 @@
         (make-item :producto producto
             :cantidad cantidad
             :subtotal (* cantidad (producto-precio producto))))
-    (setf (pedido-items pedido) (append (pedido-items pedido) (list item)))
-    (setf (pedido-total pedido) (+ (pedido-total pedido) (item-subtotal item)))
-)
+    (setf (pedido-items pedido) (append (pedido-items pedido) (list item))
+        (pedido-total pedido) (+ (pedido-total pedido) (item-subtotal item))))
 
 ;-----------------------------------------------------
 ; Guarda el pedido actual en un fichero de texto. El
@@ -81,10 +81,10 @@
 ; del pedido. Si ya existe, se sobreescribirá.
 ;-----------------------------------------------------
 (defun guardar-pedido ()
-    (let ((fichero (open (format nil "pedido~2,'0d.txt" (pedido-numero pedido))
+    (let ((fichero (open (format nil "pedidos/pedido~2,'0d.txt" (pedido-numero pedido))
         :direction :output
-        :if-exists :supersede
-        :if-does-not-exist :create)))
+        :if-exists :supersede  ; Sobreescribir si existe
+        :if-does-not-exist :create)))  ; Crear si no existe
         (when fichero
             (format fichero "PEDIDO ~2,'0d~%" (pedido-numero pedido))
             (format fichero "~17@a~35@a~36@a~%"
@@ -110,38 +110,146 @@
     (rectangulo-relleno 0 0 0 1 333 436 373) ; rectangulo del titulo
     (visualizar-palabra "productos" 84 342 2 10)
     (rectangulo 1 174 436 330) ; espacio de la lista de productos
-    (rectangulo-relleno 0 0 0 1 136 637 170) ; letrero del pedido
-    (rectangulo 1 33 637 133) ; espacio de productos del pedido
-    (rectangulo 1 0 330 30) ; espacio del menu
+    (rectangulo-relleno 0 0 0 1 139 637 170) ; letrero del pedido
+    (rectangulo 1 33 637 136) ; espacio de productos del pedido
+    (rectangulo 1 0 330 33) ; espacio del menu
     (rectangulo-relleno 0 0 0 331 0 637 30) ; espacio del total
 )
+
+;-----------------------------------------------------
+; Inicia un pedido, pide el número de pedido,
+; muestra el número de pedido, permite seleccionar
+; producto, las unidades de este y el total del pedido
+; Finalmente, guarda todo en un archivo e informa
+; al usuario.
+;-----------------------------------------------------
+(defun menu()
+    (iniciar-pedido)
+    (anadir-productos))
+
+;-----------------------------------------------------
+; Pide al usuario si quiere iniciar el pedido
+;-----------------------------------------------------
+(defun iniciar-pedido()
+    (limpiar-menu)
+    (princ "[] Iniciar pedido (S/N): ")
+    (setq a (read))
+    (cond ((string-equal a "S") (pedir-numero))
+        (t (menu))
+    )
+    (setq contadorItem 17)
+    (mostrar-total (pedido-total pedido))
+    (goto-xy 1 23))
+
+;-----------------------------------------------------
+; Pide el número de pedido, lo inicializa y lo
+; imprime en pantalla.
+;-----------------------------------------------------
+(defun pedir-numero()
+    (limpiar-menu)
+    (princ "[] Numero de pedido: ")
+    (setq num (read))
+    (inicializar-pedido num)
+    (indicador-pedido num))
+
+;-----------------------------------------------------
+; Pide el número del producto que desea añadir,
+; las cantidades que quiere de este y confirma
+; si lo que pide es correcto para añadirlo al pedido.
+;-----------------------------------------------------
+(defun anadir-productos()
+    (limpiar-menu)
+    (princ "[] Numero de producto: ")
+    (setq num (read))
+    (if (or (< num 0) (> num 20))
+        ((limpiar-menu)
+        (princ "[] No existe. Insertar otro (S/N): ")
+        (setq insertarnuevo (read))
+        (cond ((string-equal insertarnuevo "S") (anadir-productos))
+            (t (continuar-pedido)))))
+    (imagen-producto num)
+    (limpiar-menu)
+    (format t "[] Unidades de ~a: "
+        (producto-nombre (aref productos (- num 1))))
+    (setq cant (read))
+    (limpiar-menu)
+    (format t "[] ~d de ~a (S/N): "
+        cant
+        (producto-nombre (aref productos (- num 1))))
+    (setq confirm (read))
+    (logo)
+    (cond ((string-equal confirm "S")
+            (incluir-item (aref productos (- num 1)) cant)
+            (if (= (mod contadorItem 18) 0) 
+                (rectangulo-relleno 255 255 255 2 34 636 135))
+            (setq contadorItem (+ 1 contadorItem))
+            (color 0 0 0)
+            (imprimir-item contadorItem)
+            (mostrar-total (pedido-total pedido))))
+    (continuar-pedido))
+
+;-----------------------------------------------------
+; Pide al usuario si quiere continuar con el pedido.
+; Si se quiere continuar se le pide que añada más
+; productos, si no se guarda el pedido y se pregunta
+; si quiere hacer otro.
+;-----------------------------------------------------
+(defun continuar-pedido()
+    (limpiar-menu)
+    (princ "[] Continuar pedido (S/N): ")
+    (setq continuar(read))
+    (cond ((string-equal continuar "S") (anadir-productos))
+        (t (guardar-pedido)
+            (nuevo-pedido))))
+
+;-----------------------------------------------------
+; Informa al usuario de que se ha guardado su pedido
+; y le pregunta si quiere hacer otro.
+;-----------------------------------------------------
+(defun nuevo-pedido()
+    (limpiar-menu)
+    (princ "[] Guardado. Nuevo pedido (S/N): ")
+    (setq nuevoPedido(read))
+    (cond ((string-equal nuevoPedido "S") 
+            (tapar-total)
+            (menu))
+        (t (exit))))
 
 
 ;;*****************************************************************************
 ;;                              FUNCIONES BÁSICAS
 ;;*****************************************************************************
 
-;-----------------------------------------------------
-; Dibuja un rectángulo a partir de la coordenada
-; (x1,y1) hasta la (x2, y2).
-;-----------------------------------------------------
-(defun rectangulo (x1 y1 x2 y2)
-	(move x1 y1)
-	(draw x1 y2 x2 y2 x2 y1 x1 y1))
 
 ;-----------------------------------------------------
-; Dibuja un rectángulo relleno de color (r,g,b) a
-; partir de la coordenada (x1,y1) hasta la (x2, y2).
+; Convierte la representación en string de un float
+; en un float y lo devuelve. Solo funciona con números
+; positivos. La coma de los números decimales tiene
+; que ser un punto (".").
 ;-----------------------------------------------------
-(defun rectangulo-relleno (r g b x1 y1 x2 y2)
-	(color r g b)
-	(rectangulo x1 y1 x2 y2)
-	(dotimes (i (- y2 y1))
-		(move x1 (+ i y1))
-		(draw x2 (+ i y1))
-	)
-	(color 0 0 0)
-)
+(defun parse-float (s)
+    (setq nf 0)
+    (setq lf (length s))
+    (setq pp (position #\. s))  ; Posición del punto
+    (cond ((not pp) (setq nf (parse-integer s)))  ; No hay parte decimal
+        (t (setq nf (parse-integer (subseq s 0 pp)))
+            (dotimes (i (- lf pp 1))
+                (setq nf (+ nf (* (- (char-code (char s (+ pp i 1))) 48)
+                    (expt 10 (- (+ i 1)))))))))
+    (float nf))  ; Devuelve el número en formato float
+
+;-----------------------------------------------------
+; Convierte la representación en string de un integer
+; en un integer y lo devuelve. Solo funciona con
+; números positivos.
+;-----------------------------------------------------
+(defun parse-integer (s)
+    (setq ni 0)
+    (setq li (length s))
+    (dotimes (j li)
+        (setq ni (+ ni (* (- (char-code (char s j)) 48)
+            (expt 10 (- li j 1))))))
+    ni)  ; Devuelve el número
 
 ;-----------------------------------------------------
 ; Dada una letra visualiza dicha letra utilizando la
@@ -177,15 +285,17 @@
 ; dimensión x dimension
 ;-----------------------------------------------------
 (defun visualizador (imagen a b dimension)
-    (setq fichero (open imagen :direction :input :element-type 'unsigned-byte))
+    (setq fichero (open imagen
+        :direction :input
+        :element-type 'unsigned-byte))
     (setq x a y b)
     (dotimes (i dimension)
         (move x y)
         (dotimes (j dimension)
             ;leer valores de RGB
-            (setq B (read-byte fichero nil))
-            (setq G (read-byte fichero nil))
-            (setq R (read-byte fichero nil))
+            (setq B (read-byte fichero nil)
+                G (read-byte fichero nil)
+                R (read-byte fichero nil))
             (if (null B) (return ()))
             (color R G B)
             (draw (+ 1 x) y)
@@ -193,57 +303,6 @@
         (setq x a y (+ 1 y))) ; reiniciar x e incrementar y
     (close fichero)
     (color 0 0 0))
-
-;-----------------------------------------------------
-; Borra a partir de la (linea,columna) dada el número
-; de columnas indicado de la pantalla en modo texto.
-;-----------------------------------------------------
-(defun borrar (linea columna numcolumnas)
-	(goto-xy columna linea)
-	(dotimes (i numcolumnas)
-		(princ " ")
-		(goto-xy (+ i columna) linea)
-	)
-)
-
-;-----------------------------------------------------
-; Visualiza el texto dado en la (linea,columna) dada
-; de la pantalla en modo texto.
-;-----------------------------------------------------
-(defun escribir (linea columna TEXTO)
-	(goto-xy columna linea)
-	(format t TEXTO)
-)
-
-;-----------------------------------------------------
-; Convierte la representación en string de un float
-; en un float y lo devuelve. Solo funciona con números
-; positivos. La coma de los números decimales tiene
-; que ser un punto (".").
-;-----------------------------------------------------
-(defun parse-float (s)
-    (setq nf 0)
-    (setq lf (length s))
-    (setq pp (position #\. s))  ; Posición del punto
-    (cond ((not pp) (setq nf (parse-integer s)))  ; No hay parte decimal
-        (t (setq nf (parse-integer (subseq s 0 pp)))
-            (dotimes (i (- lf pp 1))
-                (setq nf (+ nf (* (- (char-code (char s (+ pp i 1))) 48)
-                    (expt 10 (- (+ i 1)))))))))
-    (float nf))
-
-;-----------------------------------------------------
-; Convierte la representación en string de un integer
-; en un integer y lo devuelve. Solo funciona con
-; números positivos.
-;-----------------------------------------------------
-(defun parse-integer (s)
-    (setq ni 0)
-    (setq li (length s))
-    (dotimes (j li)
-        (setq ni (+ ni (* (- (char-code (char s j)) 48)
-            (expt 10 (- li j 1))))))
-    ni)
 
 ;-----------------------------------------------------
 ; Visualiza el indicador del número de pedido dado en
@@ -266,9 +325,80 @@
 ; Visualiza la imagen del logo del programa.
 ;-----------------------------------------------------
 (defun logo ()
-    (visualizador "img/logo.img" 440 174 200) ; logo del programa
-)
+    (visualizador "img/logo.img" 440 174 200)) ; logo del programa
 
+;-----------------------------------------------------
+; Visualiza el coste total del pedido.
+;-----------------------------------------------------
+(defun mostrar-total(n)
+    (visualizar-palabra (format nil "total") 334 6 2 1)
+    (visualizar-palabra (format nil "~9,2,'0f" n) 444 6 2 1))
+
+;-----------------------------------------------------
+; Tapa el indicador de total del pedido.
+;-----------------------------------------------------
+(defun tapar-total ()
+    (rectangulo-relleno 0 0 0 331 0 637 30))
+
+;-----------------------------------------------------
+; Limpia el menú y deja el cursor listo para escribir
+; nueva información.
+;-----------------------------------------------------
+(defun limpiar-menu ()
+    (borrar 23 2 40)  ; borrar lo escrito
+    (goto-xy 1 23))  ; situar el cursor en la posicion inicial
+
+;-----------------------------------------------------
+; Dibuja un rectángulo a partir de la coordenada
+; (x1,y1) hasta la (x2, y2).
+;-----------------------------------------------------
+(defun rectangulo (x1 y1 x2 y2)
+	(move x1 y1)
+	(draw x1 y2 x2 y2 x2 y1 x1 y1))
+
+;-----------------------------------------------------
+; Dibuja un rectángulo relleno de color (r,g,b) a
+; partir de la coordenada (x1,y1) hasta la (x2, y2).
+;-----------------------------------------------------
+(defun rectangulo-relleno (r g b x1 y1 x2 y2)
+	(color r g b)
+	(rectangulo x1 y1 x2 y2)
+	(dotimes (i (- y2 y1))
+		(move x1 (+ i y1))
+		(draw x2 (+ i y1)))
+	(color 0 0 0))
+
+;-----------------------------------------------------
+; Borra a partir de la (linea,columna) dada el número
+; de columnas indicado de la pantalla en modo texto.
+;-----------------------------------------------------
+(defun borrar (linea columna numcolumnas)
+	(goto-xy columna linea)
+	(dotimes (i numcolumnas)
+		(princ " ")
+		(goto-xy (+ i columna) linea)))
+
+;-----------------------------------------------------
+; Visualiza el texto dado en la (linea,columna) dada
+; de la pantalla en modo texto.
+;-----------------------------------------------------
+(defun escribir (linea columna TEXTO)
+	(goto-xy columna linea)
+	(format t TEXTO))
+
+;-----------------------------------------------------
+; Imprime los ítems que se van añadiendo al pedido.
+;-----------------------------------------------------
+(defun imprimir-item(contadorItem)
+    (setq offset (mod (- contadorItem 1) 18))
+    (setf item (car (last (pedido-items pedido))))
+    (setq linea (+ 16 (floor offset 3)))
+    (setq columna (+ 1 (* 26 (mod offset 3))))
+    (escribir linea columna (format nil "[~12a/~3,'0d/~7,2f]"
+        (producto-nombre (item-producto item))
+        (item-cantidad item)
+        (item-subtotal item)))
+)
 
 ;;*****************************************************************************
 ;;                                  ESTRUCTURAS

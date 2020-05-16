@@ -1,6 +1,6 @@
 """
     Programa de conversión de imágenes BMP 24 bits a imágenes IMG.
-    Convierte todas las imágenes BMP de un directorio y las guarda como IMG
+    Convierte todas las imágenes BMP de un directorio y las guarda como IMG
     en otro directorio. Si no se indican los directorios de entrada y de
     salida, el programa realiza la conversión con los directorios por defecto.
     Instrucciones de uso:

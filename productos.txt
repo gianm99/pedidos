@@ -1,6 +1,6 @@
 Cereales
 2.5
-Pan de molde
+Pan tostado
 1.25
 Gaseosa
 2.99
@@ -24,7 +24,7 @@ Cecina
 10.2
 Whisky
 30.75
-Pack de leche
+Chocolate
 7.5
 Berberechos
 21.15
