@@ -137,6 +137,7 @@
     (cond ((string-equal a "S") (pedir-numero))
         (t (menu))
     )
+    (setq numItem 0)
     (mostrar-total (pedido-total pedido))
     (goto-xy 1 23))
 
@@ -179,6 +180,8 @@
     (logo)
     (cond ((string-equal confirm "S")
             (incluir-item (aref productos (- num 1)) cant)
+            (incf contadorItem)
+            (imprimir-item contadorItem)
             (mostrar-total (pedido-total pedido))))
     (continuar-pedido))
 
@@ -380,6 +383,32 @@
 	(goto-xy columna linea)
 	(format t TEXTO))
 
+;-----------------------------------------------------
+; Imprime los ítems que se van añadiendo al pedido.
+;-----------------------------------------------------
+(defun imprimir-item(contadorItem)
+    ;(format nil "file~p" 1)  ==> "file"
+    ;; (format nil "file~p" 10) ==> "files"
+    ;; (format nil "file~p" 0)  ==> "files"
+    ;; esto es por si tenía que usarlo
+    (cond ( (and (> contadorItem 1) (< contadorItem 5)) (setq linea 20))
+        ((and (> contadorItem 5) (< contadorItem 10)) (setq linea 21))
+        ((and (> contadorItem 10) (< contadorItem 15)) (setq linea 22))
+        (t (setq linea 21) (setq contadorItem 0)) 
+    )
+    (cond ((= contadorItem 0) (goto-xy (n linea))(format "~A hola que tal"))
+        (t (setq n (+ contadorItem 6)) (goto-xy (n linea))(format "~A hola que tal 2"))
+    )
+    ;aquí mi idea es según el contador saber si va en una línea o en otra
+    ;(todavía no he comprobado si son esas líneas, pero la columna en principio es la 1)
+    ;y después si es el primer elemento lo metería en la columna, y sino tendría que ir
+    ;detrás del que se ha puesto antes, esto sería sabiendo el nº de columnas que ocupa
+    ;cada impresión. Creo que vi como poner las separaciones de "/" pero no sé cómo
+    ;obligarle a que tenga x tamaño. Sorry Gian, no me he enterado mucho del format :(
+    ;sacar las variables que necesito sí sé hacerlo, no lo he puesto porque ya lo haría
+    ;después, es poner el nombre del producto (aquí cogería que el tamaño fuera el nombre
+    ;más largo), unidades y su subtotal. 
+)
 
 ;;*****************************************************************************
 ;;                                  ESTRUCTURAS
