@@ -53,16 +53,6 @@
         (close fichero)))
 
 ;-----------------------------------------------------
-; Inicializa una instancia de la estructura pedido y
-; le asigna numero como número de pedido.
-;-----------------------------------------------------
-(defun inicializar-pedido (numero)
-    (setq pedido
-        (make-pedido :numero numero
-            :total 0
-            :items '())))
-
-;-----------------------------------------------------
 ; Inicializa una instancia de la estructura item y la
 ; añade al pedido actual. Se le asigna el producto y
 ; la cantidad pasados como argumentos.
@@ -74,32 +64,6 @@
             :subtotal (* cantidad (producto-precio producto))))
     (setf (pedido-items pedido) (append (pedido-items pedido) (list item))
         (pedido-total pedido) (+ (pedido-total pedido) (item-subtotal item))))
-
-;-----------------------------------------------------
-; Guarda el pedido actual en un fichero de texto. El
-; fichero se llamará pedidoXX.txt, siendo XX el número
-; del pedido. Si ya existe, se sobreescribirá.
-;-----------------------------------------------------
-(defun guardar-pedido ()
-    (let ((fichero (open (format nil "pedidos/pedido~2,'0d.txt" (pedido-numero pedido))
-        :direction :output
-        :if-exists :supersede  ; Sobreescribir si existe
-        :if-does-not-exist :create)))  ; Crear si no existe
-        (when fichero
-            (format fichero "PEDIDO ~2,'0d~%" (pedido-numero pedido))
-            (format fichero "~17@a~35@a~36@a~%"
-                "PRODUCTOS"
-                "UNIDADES"
-                "IMPORTE")
-            (dotimes (i  (length (pedido-items pedido)))
-                (setf item (nth i (pedido-items pedido)))
-                (format fichero "~16a~33d~37,2f euros~%"
-                    (producto-nombre (item-producto item))
-                    (item-cantidad item)
-                    (item-subtotal item)))
-            (format fichero "TOTAL PEDIDO~11,2f euros~%"
-                (pedido-total pedido)))
-        (close fichero)))
 
 ;-----------------------------------------------------
 ; Dibuja las figuras del fondo del programa que se
@@ -126,31 +90,6 @@
 (defun menu()
     (iniciar-pedido)
     (anadir-productos))
-
-;-----------------------------------------------------
-; Pide al usuario si quiere iniciar el pedido
-;-----------------------------------------------------
-(defun iniciar-pedido()
-    (limpiar-menu)
-    (princ "[] Iniciar pedido (S/N): ")
-    (setq a (read))
-    (cond ((string-equal a "S") (pedir-numero))
-        (t (menu))
-    )
-    (setq contadorItem 17)
-    (mostrar-total (pedido-total pedido))
-    (goto-xy 1 23))
-
-;-----------------------------------------------------
-; Pide el número de pedido, lo inicializa y lo
-; imprime en pantalla.
-;-----------------------------------------------------
-(defun pedir-numero()
-    (limpiar-menu)
-    (princ "[] Numero de pedido: ")
-    (setq num (read))
-    (inicializar-pedido num)
-    (indicador-pedido num))
 
 ;-----------------------------------------------------
 ; Pide el número del producto que desea añadir,
@@ -187,6 +126,67 @@
             (imprimir-item contadorItem)
             (mostrar-total (pedido-total pedido))))
     (continuar-pedido))
+
+;-----------------------------------------------------
+; Guarda el pedido actual en un fichero de texto. El
+; fichero se llamará pedidoXX.txt, siendo XX el número
+; del pedido. Si ya existe, se sobreescribirá.
+;-----------------------------------------------------
+(defun guardar-pedido ()
+    (let ((fichero (open (format nil "pedidos/pedido~2,'0d.txt" (pedido-numero pedido))
+        :direction :output
+        :if-exists :supersede  ; Sobreescribir si existe
+        :if-does-not-exist :create)))  ; Crear si no existe
+        (when fichero
+            (format fichero "PEDIDO ~2,'0d~%" (pedido-numero pedido))
+            (format fichero "~17@a~35@a~36@a~%"
+                "PRODUCTOS"
+                "UNIDADES"
+                "IMPORTE")
+            (dotimes (i  (length (pedido-items pedido)))
+                (setf item (nth i (pedido-items pedido)))
+                (format fichero "~16a~33d~37,2f euros~%"
+                    (producto-nombre (item-producto item))
+                    (item-cantidad item)
+                    (item-subtotal item)))
+            (format fichero "TOTAL PEDIDO~11,2f euros~%"
+                (pedido-total pedido)))
+        (close fichero)))
+
+;-----------------------------------------------------
+; Pide al usuario si quiere iniciar el pedido
+;-----------------------------------------------------
+(defun iniciar-pedido()
+    (limpiar-menu)
+    (princ "[] Iniciar pedido (S/N): ")
+    (setq a (read))
+    (cond ((string-equal a "S") (pedir-numero))
+        (t (menu))
+    )
+    (setq contadorItem 17)
+    (mostrar-total (pedido-total pedido))
+    (goto-xy 1 23))
+
+;-----------------------------------------------------
+; Pide el número de pedido, lo inicializa y lo
+; imprime en pantalla.
+;-----------------------------------------------------
+(defun pedir-numero()
+    (limpiar-menu)
+    (princ "[] Numero de pedido: ")
+    (setq num (read))
+    (inicializar-pedido num)
+    (indicador-pedido num))
+
+;-----------------------------------------------------
+; Inicializa una instancia de la estructura pedido y
+; le asigna numero como número de pedido.
+;-----------------------------------------------------
+(defun inicializar-pedido (numero)
+    (setq pedido
+        (make-pedido :numero numero
+            :total 0
+            :items '())))
 
 ;-----------------------------------------------------
 ; Pide al usuario si quiere continuar con el pedido.
@@ -305,15 +305,6 @@
     (color 0 0 0))
 
 ;-----------------------------------------------------
-; Visualiza el indicador del número de pedido dado en
-; la pantalla usando imágenes. Solo funciona para n
-; tal que 0 <= n < 100.
-;-----------------------------------------------------
-(defun indicador-pedido (n)
-    (visualizar-palabra
-        (format nil "~30a" (format nil "pedido ~2,'0d" n)) 5 144 2 1))
-
-;-----------------------------------------------------
 ; Visualiza la imagen que corresponda al número n. Si
 ; n es menor a 0 o mayor a 19 no hace nada.
 ;-----------------------------------------------------
@@ -327,6 +318,15 @@
 (defun logo ()
     (visualizador "img/logo.img" 440 174 200)) ; logo del programa
 
+;-----------------------------------------------------
+; Visualiza el indicador del número de pedido dado en
+; la pantalla usando imágenes. Solo funciona para n
+; tal que 0 <= n < 100.
+;-----------------------------------------------------
+(defun indicador-pedido (n)
+    (visualizar-palabra
+        (format nil "~30a" (format nil "pedido ~2,'0d" n)) 5 144 2 1))
+        
 ;-----------------------------------------------------
 ; Visualiza el coste total del pedido.
 ;-----------------------------------------------------

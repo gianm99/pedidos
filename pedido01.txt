@@ -1,0 +1,3 @@
+PEDIDO 01
+        PRODUCTOS                           UNIDADES                             IMPORTE
+TOTAL PEDIDO       0.00 euros

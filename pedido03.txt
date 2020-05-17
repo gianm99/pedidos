@@ -1,0 +1,4 @@
+PEDIDO 03
+        PRODUCTOS                           UNIDADES                             IMPORTE
+Muffin                                         23                                80.50 euros
+TOTAL PEDIDO      80.50 euros

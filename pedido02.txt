@@ -1,0 +1,4 @@
+PEDIDO 02
+        PRODUCTOS                           UNIDADES                             IMPORTE
+Pizza                                           2                                11.00 euros
+TOTAL PEDIDO      11.00 euros
