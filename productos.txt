@@ -1,6 +1,6 @@
 Cereales
 2.5
-Pan tostado
+Tostadas
 1.25
 Gaseosa
 2.99
