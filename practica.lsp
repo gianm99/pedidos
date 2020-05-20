@@ -54,6 +54,9 @@
     (logo)
     (menu))
 
+;------------------------------------------------------------------------------
+;                                   MENÚ
+;------------------------------------------------------------------------------
 
 ;-----------------------------------------------------
 ; Inicia un pedido, pide el número de pedido,
@@ -65,6 +68,31 @@
 (defun menu()
     (iniciar-pedido)
     (anadir-productos))
+
+;-----------------------------------------------------
+; Pide al usuario si quiere iniciar el pedido
+;-----------------------------------------------------
+(defun iniciar-pedido()
+    (limpiar-menu)
+    (princ "[] Iniciar pedido (S/N): ")
+    (setq a (read))
+    (cond ((string-equal a "S") (pedir-numero))
+        (t (menu))
+    )
+    (setq contadorItem 0)
+    (mostrar-total (pedido-total pedido))
+    (goto-xy 1 23))
+
+;-----------------------------------------------------
+; Pide el número de pedido, lo inicializa y lo
+; imprime en pantalla.
+;-----------------------------------------------------
+(defun pedir-numero()
+    (limpiar-menu)
+    (princ "[] Numero de pedido: ")
+    (setq num (read))
+    (inicializar-pedido num)  ; crea el pedido
+    (indicador-pedido num))  ; imprime la información
 
 ;-----------------------------------------------------
 ; Pide el número del producto que desea añadir,
@@ -103,6 +131,33 @@
     (continuar-pedido))
 
 ;-----------------------------------------------------
+; Pide al usuario si quiere continuar con el pedido.
+; Si se quiere continuar se le pide que añada más
+; productos, si no se guarda el pedido y se pregunta
+; si quiere hacer otro.
+;-----------------------------------------------------
+(defun continuar-pedido()
+    (limpiar-menu)
+    (princ "[] Continuar pedido (S/N): ")
+    (setq continuar(read))
+    (cond ((string-equal continuar "S") (anadir-productos))
+        (t (guardar-pedido)
+            (fin-pedido))))
+
+;-----------------------------------------------------
+; Informa al usuario de que se ha guardado su pedido
+; y le pregunta si quiere hacer otro.
+;-----------------------------------------------------
+(defun fin-pedido()
+    (limpiar-menu)
+    (princ "[] Guardado. Nuevo pedido (S/N): ")
+    (setq nuevoPedido(read))
+    (cond ((string-equal nuevoPedido "S") 
+            (tapar-total)
+            (menu))
+        (t (exit))))
+
+;-----------------------------------------------------
 ; Guarda el pedido actual en un fichero de texto. El
 ; fichero se llamará pedidoXX.txt, siendo XX el número
 ; del pedido. Si ya existe, se sobreescribirá.
@@ -129,30 +184,9 @@
                 (pedido-total pedido)))
         (close fichero)))
 
-;-----------------------------------------------------
-; Pide al usuario si quiere iniciar el pedido
-;-----------------------------------------------------
-(defun iniciar-pedido()
-    (limpiar-menu)
-    (princ "[] Iniciar pedido (S/N): ")
-    (setq a (read))
-    (cond ((string-equal a "S") (pedir-numero))
-        (t (menu))
-    )
-    (setq contadorItem 0)
-    (mostrar-total (pedido-total pedido))
-    (goto-xy 1 23))
-
-;-----------------------------------------------------
-; Pide el número de pedido, lo inicializa y lo
-; imprime en pantalla.
-;-----------------------------------------------------
-(defun pedir-numero()
-    (limpiar-menu)
-    (princ "[] Numero de pedido: ")
-    (setq num (read))
-    (inicializar-pedido num)  ; crea el pedido
-    (indicador-pedido num))  ; imprime la información
+;------------------------------------------------------------------------------
+;                            LISTA DE PRODUCTOS
+;------------------------------------------------------------------------------
 
 ;-----------------------------------------------------
 ; Inicializa la lista de productos leyendo desde el
@@ -187,6 +221,20 @@
             (producto-precio (aref productos (+ 1 (* 2 i))))))
         (setq i (+ 1 i))))
 
+;------------------------------------------------------------------------------
+;                         INFORMACIÓN DEL PEDIDO
+;------------------------------------------------------------------------------
+
+;-----------------------------------------------------
+; Inicializa una instancia de la estructura pedido y
+; le asigna numero como número de pedido.
+;-----------------------------------------------------
+(defun inicializar-pedido (numero)
+    (setq pedido
+        (make-pedido :numero numero
+            :total 0
+            :items '())))
+
 ;-----------------------------------------------------
 ; Inicializa una instancia de la estructura item y la
 ; añade al pedido actual. Se le asigna el producto y
@@ -213,42 +261,9 @@
         (item-cantidad item)
         (item-subtotal item))))
 
-;-----------------------------------------------------
-; Inicializa una instancia de la estructura pedido y
-; le asigna numero como número de pedido.
-;-----------------------------------------------------
-(defun inicializar-pedido (numero)
-    (setq pedido
-        (make-pedido :numero numero
-            :total 0
-            :items '())))
-
-;-----------------------------------------------------
-; Pide al usuario si quiere continuar con el pedido.
-; Si se quiere continuar se le pide que añada más
-; productos, si no se guarda el pedido y se pregunta
-; si quiere hacer otro.
-;-----------------------------------------------------
-(defun continuar-pedido()
-    (limpiar-menu)
-    (princ "[] Continuar pedido (S/N): ")
-    (setq continuar(read))
-    (cond ((string-equal continuar "S") (anadir-productos))
-        (t (guardar-pedido)
-            (fin-pedido))))
-
-;-----------------------------------------------------
-; Informa al usuario de que se ha guardado su pedido
-; y le pregunta si quiere hacer otro.
-;-----------------------------------------------------
-(defun fin-pedido()
-    (limpiar-menu)
-    (princ "[] Guardado. Nuevo pedido (S/N): ")
-    (setq nuevoPedido(read))
-    (cond ((string-equal nuevoPedido "S") 
-            (tapar-total)
-            (menu))
-        (t (exit))))
+;------------------------------------------------------------------------------
+;                            CONVERSIÓN DE NÚMEROS
+;------------------------------------------------------------------------------
 
 ;-----------------------------------------------------
 ; Convierte la representación en string de un float
@@ -279,6 +294,10 @@
         (setq ni (+ ni (* (- (char-code (char s j)) 48)
             (expt 10 (- li j 1))))))
     ni)  ; Devuelve el número
+
+;------------------------------------------------------------------------------
+;                                  IMAGEN
+;------------------------------------------------------------------------------
 
 ;-----------------------------------------------------
 ; Dada una palabra la visualiza, letra a letra, a
@@ -334,20 +353,6 @@
     (color 0 0 0))
 
 ;-----------------------------------------------------
-; Dibuja las figuras del fondo del programa que se
-; mantienen fijas.
-;-----------------------------------------------------
-(defun fondo ()
-    (cls)
-    (rectangulo-relleno 0 0 0 1 333 436 373) ; rectangulo del titulo
-    (visualizar-palabra "productos" 84 342 2 10)
-    (rectangulo 1 174 436 330) ; espacio de la lista de productos
-    (rectangulo-relleno 0 0 0 1 139 637 170) ; letrero del pedido
-    (rectangulo 1 33 637 136) ; espacio de productos del pedido
-    (rectangulo 1 0 330 33) ; espacio del menu
-    (rectangulo-relleno 0 0 0 331 0 637 30)) ; espacio del total
-
-;-----------------------------------------------------
 ; Visualiza la imagen que corresponda al número n. Si
 ; n es menor a 0 o mayor a 19 no hace nada.
 ;-----------------------------------------------------
@@ -360,6 +365,23 @@
 ;-----------------------------------------------------
 (defun logo ()
     (visualizador "img/logo.img" 440 174 200)) ; logo del programa
+
+;------------------------------------------------------------------------------
+;                                  DIBUJADO
+;------------------------------------------------------------------------------
+;-----------------------------------------------------
+; Dibuja las figuras del fondo del programa que se
+; mantienen fijas.
+;-----------------------------------------------------
+(defun fondo ()
+    (cls)
+    (rectangulo-relleno 0 0 0 1 333 436 373) ; rectangulo del titulo
+    (visualizar-palabra "productos" 84 342 2 10)
+    (rectangulo 1 174 436 330) ; espacio de la lista de productos
+    (rectangulo-relleno 0 0 0 1 139 637 170) ; letrero del pedido
+    (rectangulo 1 33 637 136) ; espacio de productos del pedido
+    (rectangulo 1 0 330 33) ; espacio del menu
+    (rectangulo-relleno 0 0 0 331 0 637 30)) ; espacio del total
 
 ;-----------------------------------------------------
 ; Visualiza el indicador del número de pedido dado en
@@ -410,6 +432,10 @@
 		(move x1 (+ i y1))
 		(draw x2 (+ i y1)))
 	(color 0 0 0))
+
+;------------------------------------------------------------------------------
+;                                  TEXTO
+;------------------------------------------------------------------------------
 
 ;-----------------------------------------------------
 ; Borra a partir de la (linea,columna) dada el número
