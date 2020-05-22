@@ -103,7 +103,7 @@
     (limpiar-menu)
     (princ "[] Numero de producto: ")
     (setq num (read))
-    (if (or (< num 0) (> num 20))
+    (if (or (< num 1) (> num 20))
         ((limpiar-menu)
         (princ "[] No existe. Insertar otro (S/N): ")
         (setq insertarnuevo (read))
