@@ -357,7 +357,7 @@
 ; n es menor a 0 o mayor a 19 no hace nada.
 ;-----------------------------------------------------
 (defun imagen-producto (n)
-    (cond ((and (>= n 0) (< n 20))
+    (cond ((and (> n 0) (<= n 20))
         (visualizador (format nil "img/producto~a.img" n) 440 174 200))))
 
 ;-----------------------------------------------------
