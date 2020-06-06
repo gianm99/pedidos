@@ -1,4 +1,4 @@
-# Programa de pedidos
+# Generador de pedidos
 
 Programa que simula la generación de pedidos de productos dentro de una interfaz de usuario simple.
 
